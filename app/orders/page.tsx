@@ -79,6 +79,7 @@ const STATUS_COLOR: Record<OrderStatus, string> = {
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<OrderRecord[]>([]);
+  const [activeTab, setActiveTab] = useState<"active" | "archive">("active");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
@@ -205,6 +206,28 @@ export default function OrdersPage() {
     ).catch(() => {});
   };
 
+  const bulkRestore = async () => {
+    const changed: { id: string; status: OrderStatus }[] = [];
+    const nextOrders = orders.map((o) => {
+      if (!selectedIds.has(o.id)) return o;
+      // Only restore picked-up orders
+      if (o.status !== "picked-up") return o;
+      const updated = { ...o, status: "ready" as OrderStatus };
+      changed.push({ id: updated.id, status: updated.status });
+      return updated;
+    });
+    if (!changed.length) {
+      setSelectedIds(new Set());
+      return;
+    }
+    persist(nextOrders);
+    setSelectedIds(new Set());
+    // Fire & forget server sync
+    Promise.all(
+      changed.map((c) => serverPatch(c.id, { status: c.status }))
+    ).catch(() => {});
+  };
+
   const bulkDelete = async () => {
     if (!selectedIds.size) return;
     if (!confirm(`Delete ${selectedIds.size} selected order(s)?`)) return;
@@ -287,19 +310,30 @@ export default function OrdersPage() {
 
   const filtered = useMemo(() => {
     const s = deferredSearch.trim().toLowerCase();
-    if (!s)
-      return orders.filter((o) =>
-        statusFilter === "all" ? true : o.status === statusFilter
-      );
-    return orders.filter((o) => {
-      if (statusFilter !== "all" && o.status !== statusFilter) return false;
+
+    // First filter by active/archive tab
+    const tabFiltered = orders.filter((o) =>
+      activeTab === "active"
+        ? o.status !== "picked-up"
+        : o.status === "picked-up"
+    );
+
+    // Then apply status filter
+    const statusFiltered = tabFiltered.filter((o) =>
+      statusFilter === "all" ? true : o.status === statusFilter
+    );
+
+    // Finally apply search
+    if (!s) return statusFiltered;
+
+    return statusFiltered.filter((o) => {
       return (
         o.customerName.toLowerCase().includes(s) ||
         o.racketModel.toLowerCase().includes(s) ||
         o.racketBrand.toLowerCase().includes(s)
       );
     });
-  }, [orders, statusFilter, deferredSearch]);
+  }, [orders, activeTab, statusFilter, deferredSearch]);
 
   const highlight = useCallback(
     (text: string) => {
@@ -358,6 +392,10 @@ export default function OrdersPage() {
     );
   }
 
+  // Calculate counts for tabs
+  const activeCount = orders.filter((o) => o.status !== "picked-up").length;
+  const archiveCount = orders.filter((o) => o.status === "picked-up").length;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-100 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -414,6 +452,56 @@ export default function OrdersPage() {
           </div>
         </div>
 
+        {/* Tab Navigation */}
+        <div className="flex gap-2 border-b border-slate-200">
+          <button
+            onClick={() => {
+              setActiveTab("active");
+              setSelectedIds(new Set());
+              setStatusFilter("all");
+            }}
+            className={`px-4 py-2 font-medium transition-colors relative ${
+              activeTab === "active"
+                ? "text-emerald-700 border-b-2 border-emerald-600"
+                : "text-slate-600 hover:text-slate-800"
+            }`}
+          >
+            Active Orders
+            <span
+              className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
+                activeTab === "active"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-slate-100 text-slate-600"
+              }`}
+            >
+              {activeCount}
+            </span>
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("archive");
+              setSelectedIds(new Set());
+              setStatusFilter("all");
+            }}
+            className={`px-4 py-2 font-medium transition-colors relative ${
+              activeTab === "archive"
+                ? "text-emerald-700 border-b-2 border-emerald-600"
+                : "text-slate-600 hover:text-slate-800"
+            }`}
+          >
+            Archive
+            <span
+              className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
+                activeTab === "archive"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-slate-100 text-slate-600"
+              }`}
+            >
+              {archiveCount}
+            </span>
+          </button>
+        </div>
+
         {/* Floating multi-select action bar (no layout shift) */}
         <div
           aria-live="polite"
@@ -428,9 +516,15 @@ export default function OrdersPage() {
               {selectedIds.size} selected
             </span>
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={bulkAdvance}>
-                Advance
-              </Button>
+              {activeTab === "active" ? (
+                <Button size="sm" variant="outline" onClick={bulkAdvance}>
+                  Advance
+                </Button>
+              ) : (
+                <Button size="sm" variant="outline" onClick={bulkRestore}>
+                  Restore
+                </Button>
+              )}
               <Button size="sm" variant="outline" onClick={bulkDelete}>
                 Delete
               </Button>
@@ -450,9 +544,15 @@ export default function OrdersPage() {
           <Card className="border-dashed border-2">
             <CardContent className="p-12 text-center space-y-4">
               <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-500" />
-              <p className="text-slate-600">No orders match your filters.</p>
+              <p className="text-slate-600">
+                {activeTab === "active"
+                  ? "No active orders match your filters."
+                  : "No archived orders match your filters."}
+              </p>
               <p className="text-slate-500 text-sm">
-                Submit one through the intake form.
+                {activeTab === "active"
+                  ? "Submit one through the intake form."
+                  : "Orders will appear here once they are picked up."}
               </p>
             </CardContent>
           </Card>
@@ -538,36 +638,64 @@ export default function OrdersPage() {
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
-                              {prev && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => revertStatus(o.id)}
-                                  title="Revert"
-                                  className="h-7 px-2"
-                                >
-                                  <RotateCcw className="h-3 w-3" />
-                                </Button>
-                              )}
-                              {next && (
-                                <Button
-                                  size="sm"
-                                  onClick={() => advanceStatus(o.id)}
-                                  className="h-7 px-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-                                >
-                                  {STATUS_LABEL[next]}
-                                </Button>
-                              )}
-                              {!next && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => deleteOrder(o.id)}
-                                  title="Delete"
-                                  className="h-7 px-2"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
+                              {activeTab === "archive" ? (
+                                // In archive view, show restore button
+                                <>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => revertStatus(o.id)}
+                                    title="Restore to Ready"
+                                    className="h-7 px-3"
+                                  >
+                                    <RotateCcw className="h-3 w-3 mr-1" />
+                                    Restore
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => deleteOrder(o.id)}
+                                    title="Delete Permanently"
+                                    className="h-7 px-2"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </>
+                              ) : (
+                                // In active view, show normal status progression
+                                <>
+                                  {prev && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => revertStatus(o.id)}
+                                      title="Revert"
+                                      className="h-7 px-2"
+                                    >
+                                      <RotateCcw className="h-3 w-3" />
+                                    </Button>
+                                  )}
+                                  {next && (
+                                    <Button
+                                      size="sm"
+                                      onClick={() => advanceStatus(o.id)}
+                                      className="h-7 px-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+                                    >
+                                      {STATUS_LABEL[next]}
+                                    </Button>
+                                  )}
+                                  {!next && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => deleteOrder(o.id)}
+                                      title="Delete"
+                                      className="h-7 px-2"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  )}
+                                </>
                               )}
                             </div>
                           </TableCell>

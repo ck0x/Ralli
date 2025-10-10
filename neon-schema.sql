@@ -1,3 +1,6 @@
+-- Neon Database Schema for Racket Tracker
+-- Run these commands in your Neon DB SQL Editor or via psql
+
 -- Core tables
 CREATE TABLE IF NOT EXISTS stores (
     id SERIAL PRIMARY KEY,
@@ -38,6 +41,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     updated_at TIMESTAMP DEFAULT now()
 );
 
+-- Function to automatically update the updated_at timestamp
 CREATE OR REPLACE FUNCTION update_job_timestamp()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -46,6 +50,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Trigger to call the function before updating jobs
 CREATE TRIGGER trigger_update_job_timestamp
 BEFORE UPDATE ON jobs
 FOR EACH ROW
@@ -70,3 +75,21 @@ SELECT
 FROM jobs j
 JOIN customers c ON c.id = j.customer_id
 LEFT JOIN rackets r ON r.id = j.racket_id;
+
+-- Optional: Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_customers_store_id ON customers(store_id);
+CREATE INDEX IF NOT EXISTS idx_rackets_customer_id ON rackets(customer_id);
+CREATE INDEX IF NOT EXISTS idx_rackets_store_id ON rackets(store_id);
+CREATE INDEX IF NOT EXISTS idx_jobs_store_id ON jobs(store_id);
+CREATE INDEX IF NOT EXISTS idx_jobs_customer_id ON jobs(customer_id);
+CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status);
+CREATE INDEX IF NOT EXISTS idx_jobs_created_at ON jobs(created_at DESC);
+
+-- Insert a default store (REQUIRED for the app to work)
+INSERT INTO stores (id, name, contact_email) 
+VALUES (1, 'Default Store', 'store@example.com')
+ON CONFLICT (id) DO NOTHING;
+
+-- Reset the sequence to the correct value
+SELECT setval('stores_id_seq', (SELECT COALESCE(MAX(id), 1) FROM stores));
+

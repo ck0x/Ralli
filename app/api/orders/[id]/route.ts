@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServer } from "@/lib/supabaseAdmin";
+import { sql } from "@/lib/neonDb";
 import { z } from "zod";
 
 const patchSchema = z.object({
@@ -20,19 +20,54 @@ export async function PATCH(
   const parsed = patchSchema.safeParse(body);
   if (!parsed.success)
     return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
-  const supabase = getSupabaseServer();
-  const { data, error } = await supabase
-    .from("jobs")
-    .update({
-      status: parsed.data.status,
-      additional_notes: parsed.data.additionalNotes,
-    })
-    .eq("id", idNum)
-    .select("*")
-    .single();
-  if (error)
+
+  try {
+    // Update only the fields that were provided
+    const status = parsed.data.status;
+    const additionalNotes = parsed.data.additionalNotes;
+
+    if (status !== undefined && additionalNotes !== undefined) {
+      const data = await sql`
+        UPDATE jobs 
+        SET status = ${status}, additional_notes = ${additionalNotes}
+        WHERE id = ${idNum}
+        RETURNING *
+      `;
+      if (data.length === 0) {
+        return NextResponse.json({ error: "Job not found" }, { status: 404 });
+      }
+      return NextResponse.json({ data: data[0] });
+    } else if (status !== undefined) {
+      const data = await sql`
+        UPDATE jobs 
+        SET status = ${status}
+        WHERE id = ${idNum}
+        RETURNING *
+      `;
+      if (data.length === 0) {
+        return NextResponse.json({ error: "Job not found" }, { status: 404 });
+      }
+      return NextResponse.json({ data: data[0] });
+    } else if (additionalNotes !== undefined) {
+      const data = await sql`
+        UPDATE jobs 
+        SET additional_notes = ${additionalNotes}
+        WHERE id = ${idNum}
+        RETURNING *
+      `;
+      if (data.length === 0) {
+        return NextResponse.json({ error: "Job not found" }, { status: 404 });
+      }
+      return NextResponse.json({ data: data[0] });
+    } else {
+      return NextResponse.json(
+        { error: "No fields to update" },
+        { status: 400 }
+      );
+    }
+  } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ data });
+  }
 }
 
 export async function DELETE(
@@ -44,9 +79,11 @@ export async function DELETE(
   const idNum = Number(params.id);
   if (Number.isNaN(idNum))
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
-  const supabase = getSupabaseServer();
-  const { error } = await supabase.from("jobs").delete().eq("id", idNum);
-  if (error)
+
+  try {
+    await sql`DELETE FROM jobs WHERE id = ${idNum}`;
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ success: true });
+  }
 }
