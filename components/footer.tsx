@@ -12,7 +12,7 @@ export function Footer() {
               <div className="w-8 h-8 bg-gradient-to-r from-emerald-600 to-blue-600 rounded-lg flex items-center justify-center">
                 <Zap className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-bold">Racquet Tracker</span>
+              <span className="text-xl font-bold">Ralli</span>
             </div>
             <p className="text-gray-400 leading-relaxed">
               Simple kiosk intake form & dashboard to manage badminton racquet
@@ -56,7 +56,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2025 Racquet Tracker. MIT Licensed.</p>
+          <p>&copy; 2025 Ralli. MIT Licensed.</p>
         </div>
       </div>
     </footer>

@@ -7,7 +7,7 @@ Lightweight badminton racket stringing intake & tracking app. Now wired for Supa
 Create a `.env.local` with:
 
 ````markdown
-# Racket Tracker
+# Ralli
 
 Lightweight badminton racket stringing intake & tracking app with Auth0 authentication and Supabase backend.
 
