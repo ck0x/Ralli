@@ -5,6 +5,7 @@ import "./globals.css";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/toaster";
+import { Auth0Provider } from "@auth0/nextjs-auth0";
 
 const inter = Inter({ subsets: ["latin"] });
 
