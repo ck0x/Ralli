@@ -85,8 +85,11 @@ CREATE INDEX IF NOT EXISTS idx_jobs_customer_id ON jobs(customer_id);
 CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status);
 CREATE INDEX IF NOT EXISTS idx_jobs_created_at ON jobs(created_at DESC);
 
--- Optional: Insert a sample store for testing
--- Uncomment the following lines if you want a default store
--- INSERT INTO stores (name, contact_email) 
--- VALUES ('Default Store', 'store@example.com')
--- ON CONFLICT DO NOTHING;
+-- Insert a default store (REQUIRED for the app to work)
+INSERT INTO stores (id, name, contact_email) 
+VALUES (1, 'Default Store', 'store@example.com')
+ON CONFLICT (id) DO NOTHING;
+
+-- Reset the sequence to the correct value
+SELECT setval('stores_id_seq', (SELECT COALESCE(MAX(id), 1) FROM stores));
+

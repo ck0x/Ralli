@@ -79,6 +79,7 @@ const STATUS_COLOR: Record<OrderStatus, string> = {
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<OrderRecord[]>([]);
+  const [activeTab, setActiveTab] = useState<"active" | "archive">("active");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
@@ -287,19 +288,28 @@ export default function OrdersPage() {
 
   const filtered = useMemo(() => {
     const s = deferredSearch.trim().toLowerCase();
-    if (!s)
-      return orders.filter((o) =>
-        statusFilter === "all" ? true : o.status === statusFilter
-      );
-    return orders.filter((o) => {
-      if (statusFilter !== "all" && o.status !== statusFilter) return false;
+    
+    // First filter by active/archive tab
+    const tabFiltered = orders.filter((o) =>
+      activeTab === "active" ? o.status !== "picked-up" : o.status === "picked-up"
+    );
+    
+    // Then apply status filter
+    const statusFiltered = tabFiltered.filter((o) =>
+      statusFilter === "all" ? true : o.status === statusFilter
+    );
+    
+    // Finally apply search
+    if (!s) return statusFiltered;
+    
+    return statusFiltered.filter((o) => {
       return (
         o.customerName.toLowerCase().includes(s) ||
         o.racketModel.toLowerCase().includes(s) ||
         o.racketBrand.toLowerCase().includes(s)
       );
     });
-  }, [orders, statusFilter, deferredSearch]);
+  }, [orders, activeTab, statusFilter, deferredSearch]);
 
   const highlight = useCallback(
     (text: string) => {

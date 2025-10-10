@@ -60,7 +60,10 @@ export async function PATCH(
       }
       return NextResponse.json({ data: data[0] });
     } else {
-      return NextResponse.json({ error: "No fields to update" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No fields to update" },
+        { status: 400 }
+      );
     }
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

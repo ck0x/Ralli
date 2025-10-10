@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   const storeId = req.nextUrl.searchParams.get("storeId");
   if (!storeId)
     return NextResponse.json({ error: "storeId required" }, { status: 400 });
-  
+
   try {
     const data = await sql`
       SELECT * FROM jobs_view 
@@ -52,9 +52,9 @@ export async function POST(req: NextRequest) {
         AND store_id = ${parsed.data.storeId}
       LIMIT 1
     `;
-    
+
     let customerId = existingCustomers?.[0]?.id;
-    
+
     if (!customerId) {
       const insertedCustomer = await sql`
         INSERT INTO customers (store_id, full_name, contact_number, email)

@@ -118,16 +118,20 @@ CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status);
 CREATE INDEX IF NOT EXISTS idx_jobs_created_at ON jobs(created_at DESC);
 
 -- =====================================================
--- 5. INSERT SAMPLE DATA (Optional - uncomment to use)
+-- 5. INSERT SAMPLE DATA (REQUIRED for the app to work!)
 -- =====================================================
 
--- Create a default store for testing
--- INSERT INTO stores (name, contact_email) 
--- VALUES ('My Tennis Shop', 'shop@example.com')
--- ON CONFLICT DO NOTHING;
+-- Create a default store - REQUIRED!
+-- The app needs at least one store to function properly
+INSERT INTO stores (id, name, contact_email)
+VALUES (1, 'My Tennis Shop', 'shop@example.com')
+ON CONFLICT (id) DO NOTHING;
+
+-- Reset the sequence to the correct value
+SELECT setval('stores_id_seq', (SELECT COALESCE(MAX(id), 1) FROM stores));
 
 -- =====================================================
--- DONE! 
+-- DONE!
 -- =====================================================
 -- Your database is now ready to use.
 -- Verify by running: SELECT * FROM stores;
@@ -144,6 +148,7 @@ CREATE INDEX IF NOT EXISTS idx_jobs_created_at ON jobs(created_at DESC);
 ## Expected Tables
 
 After running the script, you should have:
+
 - ✅ `stores`
 - ✅ `customers`
 - ✅ `rackets`
@@ -159,12 +164,15 @@ After running the script, you should have:
 ## Troubleshooting
 
 **Error: "relation already exists"**
+
 - This is fine! It means the table was already created.
 
 **Error: "syntax error"**
+
 - Make sure you copied the entire script
 - Try running sections one at a time
 
 **Error: "permission denied"**
+
 - Make sure you're using the correct database connection
 - Verify you have admin access to your Neon project
