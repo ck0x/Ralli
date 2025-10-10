@@ -11,6 +11,7 @@ export async function PATCH(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> | { id: string } }
 ) {
+  // Auth is already checked by middleware - this route is protected
   const params = await context.params; // Await per Next.js dynamic route guidance
   const idNum = Number(params.id);
   if (Number.isNaN(idNum))
@@ -38,6 +39,7 @@ export async function DELETE(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> | { id: string } }
 ) {
+  // Auth is already checked by middleware - this route is protected
   const params = await context.params;
   const idNum = Number(params.id);
   if (Number.isNaN(idNum))

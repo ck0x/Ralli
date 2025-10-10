@@ -33,6 +33,7 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
+import { AuthRequired } from "@/components/auth-required";
 
 interface OrderRecord {
   id: string;
@@ -83,6 +84,7 @@ export default function OrdersPage() {
   const deferredSearch = useDeferredValue(search);
   // Only table (row) view retained per request
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [authError, setAuthError] = useState(false);
 
   const storeId = Number(
     process.env.NEXT_PUBLIC_DEFAULT_STORE_ID || process.env.STORE_ID || 1
@@ -91,6 +93,10 @@ export default function OrdersPage() {
   const loadOrders = useCallback(async () => {
     try {
       const res = await fetch(`/api/orders?storeId=${storeId}`);
+      if (res.status === 401) {
+        setAuthError(true);
+        return;
+      }
       if (!res.ok) throw new Error("api fetch failed");
       const json = await res.json();
       const apiOrders = (json.data || []).map((j: any) => ({
@@ -341,6 +347,16 @@ export default function OrdersPage() {
       return next;
     });
   };
+
+  // Show auth required screen if unauthorized
+  if (authError) {
+    return (
+      <AuthRequired
+        title="Orders Dashboard"
+        message="Please log in to view and manage orders."
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-100 p-6">
