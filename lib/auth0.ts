@@ -18,4 +18,29 @@ export const auth0 = new Auth0Client({
     scope: process.env.AUTH0_SCOPE || "openid profile email",
     audience: process.env.AUTH0_AUDIENCE,
   },
+
+  // Configure session and transaction cookies for Vercel deployment
+  session: {
+    // Use rolling sessions to refresh the session on each request
+    rolling: true,
+    // Absolute session duration (7 days in seconds)
+    absoluteDuration: 60 * 60 * 24 * 7,
+    // Inactivity duration (1 day in seconds)
+    inactivityDuration: 60 * 60 * 24,
+    // Cookie configuration for production
+    cookie: {
+      // Use secure cookies in production (Vercel always uses HTTPS)
+      secure: process.env.NODE_ENV === "production",
+      // SameSite=lax is more compatible with redirects
+      sameSite: "lax",
+    },
+  },
+
+  // Configure transaction cookie (used during auth flow)
+  transactionCookie: {
+    // Use secure cookies in production
+    secure: process.env.NODE_ENV === "production",
+    // SameSite=lax is required for the callback to work
+    sameSite: "lax",
+  },
 });
