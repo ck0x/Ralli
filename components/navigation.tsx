@@ -1,13 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { AuthButtons } from "./auth-buttons";
 
 export function Navigation() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch user profile from Auth0
+    fetch("/auth/profile")
+      .then((res) => {
+        if (res.ok) return res.json();
+        return null;
+      })
+      .then((data) => {
+        setUser(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setUser(null);
+        setLoading(false);
+      });
+  }, []);
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
@@ -51,11 +71,7 @@ export function Navigation() {
                 />
               </Link>
             ))}
-            <Link href="/form">
-              <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-full px-6 transition-all duration-300 transform hover:scale-105">
-                New Order
-              </Button>
-            </Link>
+            {!loading && <AuthButtons user={user} />}
           </div>
 
           {/* Mobile menu button */}
@@ -93,11 +109,7 @@ export function Navigation() {
                 </Link>
               ))}
               <div className="px-3 py-2">
-                <Link href="/form">
-                  <Button className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-full">
-                    New Order
-                  </Button>
-                </Link>
+                {!loading && <AuthButtons user={user} isMobile={true} />}
               </div>
             </div>
           </div>
