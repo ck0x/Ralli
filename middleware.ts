@@ -9,7 +9,8 @@ export async function middleware(request: NextRequest) {
   const response = await auth0.middleware(request);
 
   // List of paths that should be protected (require authentication)
-  const protectedPaths = ["/orders", "/products", "/api/orders"];
+  // /form is now protected so we can track which user submits orders
+  const protectedPaths = ["/orders", "/products", "/form", "/api/orders"];
 
   // Check if current path should be protected
   const isProtectedPath = protectedPaths.some((protectedPath) =>

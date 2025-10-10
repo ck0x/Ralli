@@ -41,6 +41,9 @@ interface FormData {
 }
 
 export default function CustomerIntakeForm() {
+  // Authentication: This form now requires login so we can track which staff member submitted the order
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
   // fullscreen / kiosk state
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isKiosk, setIsKiosk] = useState(false);
@@ -56,6 +59,15 @@ export default function CustomerIntakeForm() {
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
+  
+  // Fetch current user info
+  useEffect(() => {
+    fetch("/auth/profile")
+      .then((res) => res.ok ? res.json() : null)
+      .then((user) => setCurrentUser(user))
+      .catch(() => setCurrentUser(null));
+  }, []);
+
   // fullscreen listener keeps local state in sync
   useEffect(() => {
     const handler = () => setIsFullscreen(Boolean(document.fullscreenElement));
