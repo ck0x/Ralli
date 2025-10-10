@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
   // If this is a protected path, check for session
   if (isProtectedPath) {
     const session = await auth0.getSession();
-    
+
     // If no session, redirect to login
     if (!session) {
       const loginUrl = new URL("/auth/login", request.url);
