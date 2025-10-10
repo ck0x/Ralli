@@ -5,11 +5,12 @@ import "./globals.css";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/toaster";
+import { Auth0Provider } from "@auth0/nextjs-auth0";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Racquet Tracker - Stringing Order Management",
+  title: "Ralli - Stringing Order Management",
   description:
     "Track badminton racquet stringing orders from intake to completion. Kiosk intake form and simple order status dashboard.",
   generator: "v0.dev",

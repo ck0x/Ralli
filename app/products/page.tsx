@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Filter, Search, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,10 +13,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { AuthRequired } from "@/components/auth-required";
 
 export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [authError, setAuthError] = useState(false);
+
+  // Check auth on mount
+  useEffect(() => {
+    fetch("/auth/profile")
+      .then((res) => {
+        if (res.status === 401) {
+          setAuthError(true);
+        }
+      })
+      .catch(() => {
+        setAuthError(true);
+      });
+  }, []);
+
+  // Show auth required screen if unauthorized
+  if (authError) {
+    return (
+      <AuthRequired
+        title="Products Catalog"
+        message="Please log in to view our product catalog."
+      />
+    );
+  }
 
   const categories = [
     { id: "all", name: "All Products" },

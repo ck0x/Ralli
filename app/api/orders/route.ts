@@ -19,6 +19,7 @@ const createOrderSchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
+  // Auth is already checked by middleware - this route is protected
   const storeId = req.nextUrl.searchParams.get("storeId");
   if (!storeId)
     return NextResponse.json({ error: "storeId required" }, { status: 400 });
@@ -34,6 +35,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  // Auth is already checked by middleware - this route is protected
   const body = await req.json().catch(() => null);
   const parsed = createOrderSchema.safeParse(body);
   if (!parsed.success)
