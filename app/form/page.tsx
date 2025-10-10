@@ -59,11 +59,11 @@ export default function CustomerIntakeForm() {
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
-  
+
   // Fetch current user info
   useEffect(() => {
     fetch("/auth/profile")
-      .then((res) => res.ok ? res.json() : null)
+      .then((res) => (res.ok ? res.json() : null))
       .then((user) => setCurrentUser(user))
       .catch(() => setCurrentUser(null));
   }, []);
