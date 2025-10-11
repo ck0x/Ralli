@@ -11,6 +11,7 @@ import { AuthButtons } from "./auth-buttons";
 export function Navigation() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Fetch user profile from Auth0
@@ -20,8 +21,27 @@ export function Navigation() {
         return null;
       })
       .then((data) => {
+        console.log("👤 User profile:", data);
         setUser(data);
         setLoading(false);
+        // Check if user is admin
+        if (data) {
+          console.log("🔍 Checking admin status...");
+          fetch("/api/admin/check")
+            .then((res) => res.json())
+            .then((adminData) => {
+              console.log("🔐 Admin check response:", adminData);
+              setIsAdmin(adminData.isAdmin || false);
+              console.log(
+                "✅ isAdmin state set to:",
+                adminData.isAdmin || false
+              );
+            })
+            .catch((err) => {
+              console.error("❌ Admin check error:", err);
+              setIsAdmin(false);
+            });
+        }
       })
       .catch(() => {
         setUser(null);
@@ -33,8 +53,9 @@ export function Navigation() {
 
   const navigation = [
     { name: "Home", href: "/" },
-    { name: "Submit Order", href: "/form" },
-    { name: "Orders", href: "/orders" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+    ...(isAdmin ? [{ name: "Admin", href: "/admin" }] : []),
   ];
 
   return (
@@ -69,6 +90,11 @@ export function Navigation() {
                 />
               </Link>
             ))}
+            <Link href="/apply">
+              <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800">
+                Get Started
+              </Button>
+            </Link>
             {!loading && <AuthButtons user={user} />}
           </div>
 
@@ -106,6 +132,13 @@ export function Navigation() {
                   {item.name}
                 </Link>
               ))}
+              <div className="px-3 py-2">
+                <Link href="/apply">
+                  <Button className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800">
+                    Get Started
+                  </Button>
+                </Link>
+              </div>
               <div className="px-3 py-2">
                 {!loading && <AuthButtons user={user} isMobile={true} />}
               </div>
