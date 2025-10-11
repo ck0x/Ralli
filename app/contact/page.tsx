@@ -7,31 +7,20 @@ export default function ContactPage() {
         <h1 className="text-4xl font-bold text-center text-gray-900 mb-12">
           Contact
         </h1>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto">
-              <MapPin className="h-8 w-8 text-white" />
-            </div>
-            <h3 className="text-xl font-semibold">Location (Sample)</h3>
-            <p className="text-gray-600">
-              123 Sports Avenue
-              <br />
-              Badminton City, BC 12345
-            </p>
-          </div>
+        <div className="grid md:grid-cols-2 gap-8">
           <div className="text-center space-y-4">
             <div className="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto">
               <Phone className="h-8 w-8 text-white" />
             </div>
-            <h3 className="text-xl font-semibold">Phone (Sample)</h3>
-            <p className="text-gray-600">(555) 123-4567</p>
+            <h3 className="text-xl font-semibold">Phone</h3>
+            <p className="text-gray-600">(+64) 21 109 1862</p>
           </div>
           <div className="text-center space-y-4">
             <div className="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto">
               <Mail className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold">Email</h3>
-            <p className="text-gray-600">owner@example.com</p>
+            <p className="text-gray-600">chriskwon0@gmail.com</p>
           </div>
         </div>
       </div>
