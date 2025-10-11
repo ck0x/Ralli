@@ -33,8 +33,8 @@ export function Navigation() {
 
   const navigation = [
     { name: "Home", href: "/" },
-    { name: "Submit Order", href: "/form" },
-    { name: "Orders", href: "/orders" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
   ];
 
   return (
@@ -69,6 +69,11 @@ export function Navigation() {
                 />
               </Link>
             ))}
+            <Link href="/apply">
+              <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800">
+                Get Started
+              </Button>
+            </Link>
             {!loading && <AuthButtons user={user} />}
           </div>
 
@@ -106,6 +111,13 @@ export function Navigation() {
                   {item.name}
                 </Link>
               ))}
+              <div className="px-3 py-2">
+                <Link href="/apply">
+                  <Button className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800">
+                    Get Started
+                  </Button>
+                </Link>
+              </div>
               <div className="px-3 py-2">
                 {!loading && <AuthButtons user={user} isMobile={true} />}
               </div>
