@@ -21,16 +21,26 @@ export function Navigation() {
         return null;
       })
       .then((data) => {
+        console.log("👤 User profile:", data);
         setUser(data);
         setLoading(false);
         // Check if user is admin
         if (data) {
+          console.log("🔍 Checking admin status...");
           fetch("/api/admin/check")
             .then((res) => res.json())
             .then((adminData) => {
+              console.log("🔐 Admin check response:", adminData);
               setIsAdmin(adminData.isAdmin || false);
+              console.log(
+                "✅ isAdmin state set to:",
+                adminData.isAdmin || false
+              );
             })
-            .catch(() => setIsAdmin(false));
+            .catch((err) => {
+              console.error("❌ Admin check error:", err);
+              setIsAdmin(false);
+            });
         }
       })
       .catch(() => {

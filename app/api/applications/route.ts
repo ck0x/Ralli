@@ -8,7 +8,7 @@ const sql = neon(process.env.DATABASE_URL!);
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const session = await auth0.getSession(request);
+    const session = await auth0.getSession();
     if (!session) {
       return NextResponse.json(
         { error: "Authentication required" },
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Check authentication
-    const session = await auth0.getSession(request);
+    const session = await auth0.getSession();
     if (!session) {
       return NextResponse.json(
         { error: "Authentication required" },

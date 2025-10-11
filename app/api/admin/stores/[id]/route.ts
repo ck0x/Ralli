@@ -10,7 +10,7 @@ export async function PATCH(
 ) {
   try {
     // Check authentication and admin access
-    const session = await auth0.getSession(request);
+    const session = await auth0.getSession();
     if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
