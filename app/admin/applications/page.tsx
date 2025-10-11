@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +22,7 @@ import {
   Building2,
   MessageSquare,
   Loader2,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import {
   Dialog,
@@ -49,7 +55,7 @@ export default function ApplicationsPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>("pending");
-  
+
   // Rejection dialog state
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectingApp, setRejectingApp] = useState<Application | null>(null);
@@ -72,7 +78,7 @@ export default function ApplicationsPage() {
       toast({
         title: "Error",
         description: "Failed to load applications",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -80,7 +86,11 @@ export default function ApplicationsPage() {
   };
 
   const handleApprove = async (app: Application) => {
-    if (!confirm(`Approve ${app.business_name}? This will create their store and send them access.`)) {
+    if (
+      !confirm(
+        `Approve ${app.business_name}? This will create their store and send them access.`
+      )
+    ) {
       return;
     }
 
@@ -89,7 +99,7 @@ export default function ApplicationsPage() {
       const res = await fetch(`/api/applications/${app.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "approve" })
+        body: JSON.stringify({ action: "approve" }),
       });
 
       if (!res.ok) {
@@ -99,7 +109,7 @@ export default function ApplicationsPage() {
 
       toast({
         title: "Application Approved! ✅",
-        description: `${app.business_name} has been approved and their store is being created.`
+        description: `${app.business_name} has been approved and their store is being created.`,
       });
 
       // Refresh list
@@ -108,7 +118,7 @@ export default function ApplicationsPage() {
       toast({
         title: "Approval Failed",
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setActionLoading(null);
@@ -127,7 +137,7 @@ export default function ApplicationsPage() {
       toast({
         title: "Reason Required",
         description: "Please provide a reason for rejection",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -139,8 +149,8 @@ export default function ApplicationsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "reject",
-          reason: rejectionReason
-        })
+          reason: rejectionReason,
+        }),
       });
 
       if (!res.ok) {
@@ -150,7 +160,7 @@ export default function ApplicationsPage() {
 
       toast({
         title: "Application Rejected",
-        description: `${rejectingApp.business_name} has been notified.`
+        description: `${rejectingApp.business_name} has been notified.`,
       });
 
       setRejectDialogOpen(false);
@@ -159,7 +169,7 @@ export default function ApplicationsPage() {
       toast({
         title: "Rejection Failed",
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setActionLoading(null);
@@ -171,7 +181,9 @@ export default function ApplicationsPage() {
       case "pending":
         return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
       case "approved":
-        return <Badge className="bg-emerald-100 text-emerald-800">Approved</Badge>;
+        return (
+          <Badge className="bg-emerald-100 text-emerald-800">Approved</Badge>
+        );
       case "rejected":
         return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
       default:
@@ -185,10 +197,11 @@ export default function ApplicationsPage() {
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    
-    if (diffDays > 0) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-    if (diffHours > 0) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    return 'Just now';
+
+    if (diffDays > 0) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+    if (diffHours > 0)
+      return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    return "Just now";
   };
 
   return (
@@ -236,7 +249,9 @@ export default function ApplicationsPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
-                      <CardTitle className="text-xl">{app.business_name}</CardTitle>
+                      <CardTitle className="text-xl">
+                        {app.business_name}
+                      </CardTitle>
                       {getStatusBadge(app.status)}
                     </div>
                     <CardDescription className="mt-2">
@@ -266,7 +281,9 @@ export default function ApplicationsPage() {
                       <div>
                         <p className="text-xs text-gray-600">Owner</p>
                         <p className="font-medium">{app.owner_name}</p>
-                        <p className="text-sm text-gray-600">{app.owner_email}</p>
+                        <p className="text-sm text-gray-600">
+                          {app.owner_email}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
@@ -283,7 +300,9 @@ export default function ApplicationsPage() {
                       <Building2 className="h-4 w-4 text-gray-400 mt-1" />
                       <div>
                         <p className="text-xs text-gray-600">Business Type</p>
-                        <p className="font-medium capitalize">{app.business_type.replace("-", " ")}</p>
+                        <p className="font-medium capitalize">
+                          {app.business_type.replace("-", " ")}
+                        </p>
                       </div>
                     </div>
                     {app.business_address && (
@@ -303,8 +322,12 @@ export default function ApplicationsPage() {
                   <div className="flex items-start gap-2">
                     <MessageSquare className="h-4 w-4 text-gray-400 mt-1" />
                     <div className="flex-1">
-                      <p className="text-xs text-gray-600 mb-1">Why they want to use Ralli</p>
-                      <p className="text-sm text-gray-700 leading-relaxed">{app.reason_for_signup}</p>
+                      <p className="text-xs text-gray-600 mb-1">
+                        Why they want to use Ralli
+                      </p>
+                      <p className="text-sm text-gray-700 leading-relaxed">
+                        {app.reason_for_signup}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -312,7 +335,9 @@ export default function ApplicationsPage() {
                 {/* Notes */}
                 {app.notes && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <p className="text-xs text-blue-800 mb-1">Additional Notes</p>
+                    <p className="text-xs text-blue-800 mb-1">
+                      Additional Notes
+                    </p>
                     <p className="text-sm text-gray-700">{app.notes}</p>
                   </div>
                 )}
@@ -355,7 +380,8 @@ export default function ApplicationsPage() {
           <DialogHeader>
             <DialogTitle>Reject Application</DialogTitle>
             <DialogDescription>
-              Please provide a reason for rejecting this application. The applicant will receive this message.
+              Please provide a reason for rejecting this application. The
+              applicant will receive this message.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -371,7 +397,10 @@ export default function ApplicationsPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRejectDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setRejectDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button
