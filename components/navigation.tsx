@@ -11,6 +11,7 @@ import { AuthButtons } from "./auth-buttons";
 export function Navigation() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Fetch user profile from Auth0
@@ -22,6 +23,15 @@ export function Navigation() {
       .then((data) => {
         setUser(data);
         setLoading(false);
+        // Check if user is admin
+        if (data) {
+          fetch("/api/admin/check")
+            .then((res) => res.json())
+            .then((adminData) => {
+              setIsAdmin(adminData.isAdmin || false);
+            })
+            .catch(() => setIsAdmin(false));
+        }
       })
       .catch(() => {
         setUser(null);
@@ -35,6 +45,7 @@ export function Navigation() {
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
+    ...(isAdmin ? [{ name: "Admin", href: "/admin" }] : []),
   ];
 
   return (
