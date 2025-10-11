@@ -12,20 +12,14 @@ export async function PATCH(
     // Check authentication and admin access
     const session = await auth0.getSession(request);
     if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     const { action, reason } = await request.json();
     const applicationId = parseInt(params.id);
 
     if (!["approve", "reject"].includes(action)) {
-      return NextResponse.json(
-        { error: "Invalid action" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
 
     if (action === "approve") {
@@ -37,9 +31,8 @@ export async function PATCH(
       return NextResponse.json({
         success: true,
         storeId: result[0].approve_store_application,
-        message: "Application approved and store created"
+        message: "Application approved and store created",
       });
-
     } else if (action === "reject") {
       if (!reason) {
         return NextResponse.json(
@@ -63,10 +56,9 @@ export async function PATCH(
 
       return NextResponse.json({
         success: true,
-        message: "Application rejected"
+        message: "Application rejected",
       });
     }
-
   } catch (error: any) {
     console.error("Application action error:", error);
     return NextResponse.json(
@@ -85,10 +77,7 @@ export async function DELETE(
     // Check authentication and admin access
     const session = await auth0.getSession(request);
     if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     const applicationId = parseInt(params.id);
@@ -100,9 +89,8 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: "Application deleted"
+      message: "Application deleted",
     });
-
   } catch (error: any) {
     console.error("Application deletion error:", error);
     return NextResponse.json(
