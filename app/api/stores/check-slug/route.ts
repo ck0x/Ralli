@@ -23,7 +23,7 @@ const RESERVED_SLUGS = [
   "login",
   "logout",
   "signup",
-  "register"
+  "register",
 ];
 
 export async function GET(request: NextRequest) {
@@ -62,9 +62,9 @@ export async function GET(request: NextRequest) {
 
     const available = stores.length === 0 && applications.length === 0;
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       available,
-      reason: available ? null : "taken"
+      reason: available ? null : "taken",
     });
   } catch (error) {
     console.error("Slug check error:", error);

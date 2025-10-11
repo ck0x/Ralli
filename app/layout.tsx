@@ -10,9 +10,9 @@ import { Auth0Provider } from "@auth0/nextjs-auth0";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Ralli - Stringing Order Management",
+  title: "Ralli - Modern Racquet Stringing Management",
   description:
-    "Track badminton racquet stringing orders from intake to completion. Kiosk intake form and simple order status dashboard.",
+    "Streamline your racquet stringing business with Ralli. Kiosk intake forms, order tracking, and customer management for badminton and tennis shops.",
   generator: "v0.dev",
 };
 

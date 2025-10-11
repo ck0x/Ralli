@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       hasStore,
       shopSlug: storeData?.shop_slug || null,
-      storeName: storeData?.name || null
+      storeName: storeData?.name || null,
     });
   } catch (error) {
     console.error("Store check error:", error);

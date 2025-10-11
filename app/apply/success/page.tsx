@@ -3,7 +3,13 @@
 import { CheckCircle, Home, Mail } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function ApplicationSuccessPage() {
   return (
@@ -15,7 +21,8 @@ export default function ApplicationSuccessPage() {
           </div>
           <CardTitle className="text-3xl">Application Submitted!</CardTitle>
           <CardDescription className="text-base">
-            Thank you for applying to join Ralli. We're excited to learn more about your business.
+            Thank you for applying to join Ralli. We're excited to learn more
+            about your business.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -27,13 +34,20 @@ export default function ApplicationSuccessPage() {
             <ul className="space-y-2 text-sm text-gray-700 ml-6 list-disc">
               <li>We'll review your application within 24-48 hours</li>
               <li>You'll receive an email with our decision</li>
-              <li>If approved, you'll get your unique shop URL and dashboard access</li>
-              <li>We'll send onboarding instructions to help you get started</li>
+              <li>
+                If approved, you'll get your unique shop URL and dashboard
+                access
+              </li>
+              <li>
+                We'll send onboarding instructions to help you get started
+              </li>
             </ul>
           </div>
 
           <div className="border-t pt-6">
-            <h3 className="font-semibold text-gray-900 mb-3">In the meantime...</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">
+              In the meantime...
+            </h3>
             <div className="space-y-2 text-sm text-gray-700">
               <p>✓ Check your email (including spam folder) for updates</p>
               <p>✓ Prepare a tablet or device for your kiosk</p>
@@ -50,7 +64,10 @@ export default function ApplicationSuccessPage() {
               </Button>
             </Link>
             <Link href="/contact" className="flex-1">
-              <Button className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700" size="lg">
+              <Button
+                className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700"
+                size="lg"
+              >
                 Have Questions?
               </Button>
             </Link>
@@ -58,7 +75,10 @@ export default function ApplicationSuccessPage() {
 
           <p className="text-center text-sm text-gray-600">
             Need to update your application? Contact us at{" "}
-            <a href="mailto:support@ralli.com" className="text-emerald-600 hover:underline">
+            <a
+              href="mailto:support@ralli.com"
+              className="text-emerald-600 hover:underline"
+            >
               support@ralli.com
             </a>
           </p>
