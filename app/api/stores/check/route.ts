@@ -38,7 +38,9 @@ export async function GET(request: NextRequest) {
         LIMIT 1
       `;
     } catch (e) {
-      console.log("📝 Note: store_users table doesn't exist or has different structure");
+      console.log(
+        "📝 Note: store_users table doesn't exist or has different structure"
+      );
     }
 
     console.log(`📊 Found ${storeUsers.length} stores as user`);

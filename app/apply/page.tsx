@@ -49,6 +49,7 @@ export default function ApplyPage() {
   const [submitting, setSubmitting] = useState(false);
   const [checkingSlug, setCheckingSlug] = useState(false);
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
+  const [slugCheckTimeout, setSlugCheckTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const [formData, setFormData] = useState({
     businessName: "",
@@ -160,10 +161,17 @@ export default function ApplyPage() {
 
     setFormData((prev) => ({ ...prev, shopSlug: cleanSlug }));
 
+    // Clear previous timeout
+    if (slugCheckTimeout) {
+      clearTimeout(slugCheckTimeout);
+    }
+
     // Debounce slug check
     if (cleanSlug.length >= 3) {
-      const timer = setTimeout(() => checkSlugAvailability(cleanSlug), 500);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => {
+        checkSlugAvailability(cleanSlug);
+      }, 500);
+      setSlugCheckTimeout(timer);
     } else {
       setSlugAvailable(null);
     }
