@@ -276,20 +276,20 @@ export default function KioskMode() {
 
   if (showSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-blue-50 p-8">
-        <Card className="max-w-2xl w-full text-center shadow-2xl">
-          <CardContent className="p-12">
-            <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="h-16 w-16 text-emerald-600" />
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-blue-50 p-4">
+        <Card className="max-w-xl w-full text-center shadow-2xl">
+          <CardContent className="p-10">
+            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
+              <CheckCircle className="h-12 w-12 text-emerald-600" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">
               Order Received!
             </h1>
-            <p className="text-2xl text-gray-600 mb-8">Your order number is</p>
-            <div className="bg-gradient-to-r from-emerald-600 to-blue-600 text-white rounded-2xl p-8 mb-8">
-              <p className="text-6xl font-bold">#{orderNumber}</p>
+            <p className="text-xl text-gray-600 mb-6">Your order number is</p>
+            <div className="bg-gradient-to-r from-emerald-600 to-blue-600 text-white rounded-2xl p-6 mb-6">
+              <p className="text-5xl font-bold">#{orderNumber}</p>
             </div>
-            <p className="text-lg text-gray-600">
+            <p className="text-base text-gray-600">
               Please keep this number for reference.
               <br />
               We'll notify you when your racket is ready!
@@ -301,7 +301,7 @@ export default function KioskMode() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-blue-50">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-emerald-50 to-blue-50 flex flex-col items-center justify-center p-4">
       {/* Exit Button (Hidden - Triple click to exit) */}
       <button
         onClick={handleExitKiosk}
@@ -311,17 +311,17 @@ export default function KioskMode() {
         <Monitor className="h-5 w-5 text-gray-600" />
       </button>
 
-      <div className="max-w-4xl mx-auto p-8 py-12">
+      <div className="w-full max-w-3xl">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="w-20 h-20 bg-gradient-to-r from-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <Store className="h-12 w-12 text-white" />
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-gradient-to-r from-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <Store className="h-10 w-10 text-white" />
           </div>
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
             {store?.name}
           </h1>
-          <p className="text-2xl text-gray-600">Racket Stringing Service</p>
-          <p className="text-lg text-gray-500 mt-2">
+          <p className="text-xl text-gray-600">Racket Stringing Service</p>
+          <p className="text-base text-gray-500 mt-1">
             {currentStep === "email" && "Enter your email to get started"}
             {currentStep === "customer-type" &&
               `Welcome back, ${customerData?.name}!`}
@@ -332,10 +332,10 @@ export default function KioskMode() {
 
         {/* Progress Indicator */}
         {currentStep !== "email" && (
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-4">
             <div className="flex items-center space-x-2">
               <div
-                className={`w-3 h-3 rounded-full ${
+                className={`w-2.5 h-2.5 rounded-full ${
                   currentStep === "customer-type" ||
                   currentStep === "details" ||
                   currentStep === "review"
@@ -344,14 +344,14 @@ export default function KioskMode() {
                 }`}
               />
               <div
-                className={`w-3 h-3 rounded-full ${
+                className={`w-2.5 h-2.5 rounded-full ${
                   currentStep === "details" || currentStep === "review"
                     ? "bg-emerald-600"
                     : "bg-gray-300"
                 }`}
               />
               <div
-                className={`w-3 h-3 rounded-full ${
+                className={`w-2.5 h-2.5 rounded-full ${
                   currentStep === "review" ? "bg-emerald-600" : "bg-gray-300"
                 }`}
               />
@@ -363,23 +363,23 @@ export default function KioskMode() {
         {currentStep === "email" && (
           <form onSubmit={handleEmailSubmit} className="animate-fade-in-scale">
             <Card className="shadow-2xl">
-              <CardContent className="p-12 space-y-8">
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Mail className="h-8 w-8 text-emerald-600" />
+              <CardContent className="p-8 space-y-6">
+                <div className="text-center mb-4">
+                  <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Mail className="h-7 w-7 text-emerald-600" />
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     Let's get started
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 text-sm">
                     We'll use your email to notify you when your racket is ready
                   </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <Label
                     htmlFor="email-input"
-                    className="text-xl font-semibold"
+                    className="text-lg font-semibold"
                   >
                     Email Address
                   </Label>
@@ -389,7 +389,7 @@ export default function KioskMode() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your.email@example.com"
-                    className="h-16 text-2xl text-center"
+                    className="h-14 text-xl text-center"
                     required
                     autoFocus
                   />
@@ -398,18 +398,18 @@ export default function KioskMode() {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full h-16 text-xl bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 shadow-lg"
+                  className="w-full h-14 text-lg bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 shadow-lg"
                   disabled={isCheckingEmail}
                 >
                   {isCheckingEmail ? (
                     <>
-                      <Loader2 className="h-6 w-6 mr-3 animate-spin" />
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                       Checking...
                     </>
                   ) : (
                     <>
                       Continue
-                      <ArrowRight className="h-6 w-6 ml-3" />
+                      <ArrowRight className="h-5 w-5 ml-2" />
                     </>
                   )}
                 </Button>
@@ -420,16 +420,16 @@ export default function KioskMode() {
 
         {/* Step 2: Returning Customer - Show Previous Orders */}
         {currentStep === "customer-type" && isReturningCustomer && (
-          <Card className="shadow-2xl animate-fade-in-scale">
-            <CardContent className="p-12 space-y-8">
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="h-8 w-8 text-emerald-600" />
+          <Card className="shadow-2xl animate-fade-in-scale max-h-[calc(100vh-200px)] overflow-y-auto">
+            <CardContent className="p-8 space-y-6">
+              <div className="text-center mb-4">
+                <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <User className="h-7 w-7 text-emerald-600" />
                 </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   Welcome back, {customerData?.name}!
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm">
                   Member since{" "}
                   {new Date(
                     customerData?.memberSince || ""
@@ -438,26 +438,26 @@ export default function KioskMode() {
               </div>
 
               {recentOrders.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
                     Your Recent Orders
                   </h3>
-                  <div className="grid gap-4">
-                    {recentOrders.slice(0, 3).map((order) => (
+                  <div className="grid gap-3">
+                    {recentOrders.slice(0, 2).map((order) => (
                       <button
                         key={order.id}
                         onClick={() => handleSelectPreviousOrder(order)}
-                        className="p-6 border-2 border-gray-200 rounded-xl hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group"
+                        className="p-4 border-2 border-gray-200 rounded-xl hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left group"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Repeat className="h-5 w-5 text-emerald-600" />
-                              <span className="font-semibold text-lg">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Repeat className="h-4 w-4 text-emerald-600" />
+                              <span className="font-semibold text-base">
                                 {order.racketBrand} {order.racketModel}
                               </span>
                             </div>
-                            <div className="space-y-1 text-sm text-gray-600">
+                            <div className="space-y-0.5 text-xs text-gray-600">
                               {order.stringType && (
                                 <p>String: {order.stringType}</p>
                               )}
@@ -469,9 +469,9 @@ export default function KioskMode() {
                           </div>
                           <Badge
                             variant="outline"
-                            className="group-hover:bg-emerald-600 group-hover:text-white"
+                            className="group-hover:bg-emerald-600 group-hover:text-white text-xs"
                           >
-                            Repeat Order
+                            Repeat
                           </Badge>
                         </div>
                       </button>
@@ -484,10 +484,10 @@ export default function KioskMode() {
                 onClick={handleNewOrder}
                 size="lg"
                 variant="outline"
-                className="w-full h-16 text-xl border-2"
+                className="w-full h-14 text-lg border-2"
               >
                 Start a New Order
-                <ArrowRight className="h-6 w-6 ml-3" />
+                <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
             </CardContent>
           </Card>
@@ -502,15 +502,15 @@ export default function KioskMode() {
             }}
             className="animate-fade-in-scale"
           >
-            <Card className="shadow-2xl">
-              <CardContent className="p-8 space-y-8">
+            <Card className="shadow-2xl max-h-[calc(100vh-200px)] overflow-y-auto">
+              <CardContent className="p-6 space-y-4">
                 {/* Customer Info (only for new customers) */}
                 {!isReturningCustomer && (
                   <>
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <Label
                         htmlFor="customerName"
-                        className="text-xl font-semibold"
+                        className="text-base font-semibold"
                       >
                         Your Name <span className="text-red-500">*</span>
                       </Label>
@@ -524,16 +524,16 @@ export default function KioskMode() {
                           }))
                         }
                         placeholder="John Doe"
-                        className="h-14 text-lg"
+                        className="h-12 text-base"
                         required
                         autoFocus
                       />
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <Label
                         htmlFor="contactNumber"
-                        className="text-xl font-semibold"
+                        className="text-base font-semibold"
                       >
                         Phone Number <span className="text-red-500">*</span>
                       </Label>
@@ -548,7 +548,7 @@ export default function KioskMode() {
                           }))
                         }
                         placeholder="(555) 123-4567"
-                        className="h-14 text-lg"
+                        className="h-12 text-base"
                         required
                       />
                     </div>
@@ -556,11 +556,11 @@ export default function KioskMode() {
                 )}
 
                 {/* Racket Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
                     <Label
                       htmlFor="racketBrand"
-                      className="text-xl font-semibold"
+                      className="text-base font-semibold"
                     >
                       Racket Brand <span className="text-red-500">*</span>
                     </Label>
@@ -574,15 +574,15 @@ export default function KioskMode() {
                         }))
                       }
                       placeholder="Yonex, Victor, Li-Ning"
-                      className="h-14 text-lg"
+                      className="h-12 text-base"
                       required
                     />
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <Label
                       htmlFor="racketModel"
-                      className="text-xl font-semibold"
+                      className="text-base font-semibold"
                     >
                       Racket Model <span className="text-red-500">*</span>
                     </Label>
@@ -596,14 +596,17 @@ export default function KioskMode() {
                         }))
                       }
                       placeholder="Astrox 99, Thruster K"
-                      className="h-14 text-lg"
+                      className="h-12 text-base"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <Label htmlFor="stringType" className="text-xl font-semibold">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="stringType"
+                    className="text-base font-semibold"
+                  >
                     String Type (Optional)
                   </Label>
                   <Input
@@ -616,14 +619,14 @@ export default function KioskMode() {
                       }))
                     }
                     placeholder="BG80, Aerobite, NBG95"
-                    className="h-14 text-lg"
+                    className="h-12 text-base"
                   />
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <Label
                     htmlFor="serviceType"
-                    className="text-xl font-semibold"
+                    className="text-base font-semibold"
                   >
                     Service Type
                   </Label>
@@ -633,30 +636,30 @@ export default function KioskMode() {
                       setFormData((prev) => ({ ...prev, serviceType: value }))
                     }
                   >
-                    <SelectTrigger className="h-14 text-lg">
+                    <SelectTrigger className="h-12 text-base">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="standard" className="text-lg py-3">
+                      <SelectItem value="standard" className="text-base py-2">
                         Standard Stringing
                       </SelectItem>
-                      <SelectItem value="express" className="text-lg py-3">
+                      <SelectItem value="express" className="text-base py-2">
                         Express Service
                       </SelectItem>
-                      <SelectItem value="restring" className="text-lg py-3">
+                      <SelectItem value="restring" className="text-base py-2">
                         Restring
                       </SelectItem>
-                      <SelectItem value="repair" className="text-lg py-3">
+                      <SelectItem value="repair" className="text-base py-2">
                         Repair
                       </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <Label
                     htmlFor="additionalNotes"
-                    className="text-xl font-semibold"
+                    className="text-base font-semibold"
                   >
                     Special Requests (Optional)
                   </Label>
@@ -670,12 +673,12 @@ export default function KioskMode() {
                       }))
                     }
                     placeholder="Tension preferences, special instructions..."
-                    className="text-lg min-h-24"
-                    rows={3}
+                    className="text-sm min-h-16"
+                    rows={2}
                   />
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex gap-3">
                   <Button
                     type="button"
                     onClick={() =>
@@ -685,18 +688,18 @@ export default function KioskMode() {
                     }
                     size="lg"
                     variant="outline"
-                    className="flex-1 h-16 text-xl"
+                    className="flex-1 h-12 text-base"
                   >
-                    <ArrowLeft className="h-6 w-6 mr-3" />
+                    <ArrowLeft className="h-4 w-4 mr-2" />
                     Back
                   </Button>
                   <Button
                     type="submit"
                     size="lg"
-                    className="flex-1 h-16 text-xl bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 shadow-lg"
+                    className="flex-1 h-12 text-base bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 shadow-lg"
                   >
                     Review Order
-                    <ArrowRight className="h-6 w-6 ml-3" />
+                    <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </div>
               </CardContent>
@@ -708,76 +711,78 @@ export default function KioskMode() {
         {currentStep === "review" && (
           <form onSubmit={handleSubmit} className="animate-fade-in-scale">
             <Card className="shadow-2xl">
-              <CardContent className="p-12 space-y-8">
-                <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              <CardContent className="p-8 space-y-6">
+                <div className="text-center mb-4">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-1">
                     Review Your Order
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 text-sm">
                     Please confirm your details before submitting
                   </p>
                 </div>
 
-                <div className="space-y-6 bg-gray-50 p-6 rounded-xl">
+                <div className="space-y-4 bg-gray-50 p-5 rounded-xl">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Customer</p>
-                    <p className="text-xl font-semibold">
+                    <p className="text-xs text-gray-500 mb-1">Customer</p>
+                    <p className="text-lg font-semibold">
                       {formData.customerName}
                     </p>
-                    <p className="text-gray-600">{formData.contactNumber}</p>
-                    <p className="text-gray-600">{formData.email}</p>
+                    <p className="text-sm text-gray-600">
+                      {formData.contactNumber}
+                    </p>
+                    <p className="text-sm text-gray-600">{formData.email}</p>
                   </div>
 
-                  <div className="border-t border-gray-200 pt-4">
-                    <p className="text-sm text-gray-500 mb-1">Racket</p>
-                    <p className="text-xl font-semibold">
+                  <div className="border-t border-gray-200 pt-3">
+                    <p className="text-xs text-gray-500 mb-1">Racket</p>
+                    <p className="text-lg font-semibold">
                       {formData.racketBrand} {formData.racketModel}
                     </p>
                     {formData.stringType && (
-                      <p className="text-gray-600">
+                      <p className="text-sm text-gray-600">
                         String: {formData.stringType}
                       </p>
                     )}
                   </div>
 
-                  <div className="border-t border-gray-200 pt-4">
-                    <p className="text-sm text-gray-500 mb-1">Service</p>
-                    <p className="text-xl font-semibold capitalize">
+                  <div className="border-t border-gray-200 pt-3">
+                    <p className="text-xs text-gray-500 mb-1">Service</p>
+                    <p className="text-lg font-semibold capitalize">
                       {formData.serviceType}
                     </p>
                     {formData.additionalNotes && (
-                      <p className="text-gray-600 mt-2">
+                      <p className="text-sm text-gray-600 mt-1">
                         {formData.additionalNotes}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex gap-3">
                   <Button
                     type="button"
                     onClick={() => setCurrentStep("details")}
                     size="lg"
                     variant="outline"
-                    className="flex-1 h-16 text-xl"
+                    className="flex-1 h-12 text-base"
                   >
-                    <ArrowLeft className="h-6 w-6 mr-3" />
+                    <ArrowLeft className="h-4 w-4 mr-2" />
                     Edit
                   </Button>
                   <Button
                     type="submit"
                     size="lg"
-                    className="flex-1 h-16 text-xl bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 shadow-lg"
+                    className="flex-1 h-12 text-base bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 shadow-lg"
                     disabled={submitting}
                   >
                     {submitting ? (
                       <>
-                        <Loader2 className="h-6 w-6 mr-3 animate-spin" />
+                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                         Submitting...
                       </>
                     ) : (
                       <>
-                        <CheckCircle className="h-6 w-6 mr-3" />
+                        <CheckCircle className="h-5 w-5 mr-2" />
                         Submit Order
                       </>
                     )}
