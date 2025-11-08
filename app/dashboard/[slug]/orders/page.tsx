@@ -93,12 +93,18 @@ export default function OrdersPage() {
   useEffect(() => {
     const loadOrders = async () => {
       try {
-        const storeRes = await fetch(`/api/stores/by-slug/${slug}`);
+        // Use cached store data
+        const storeRes = await fetch(`/api/stores/by-slug/${slug}`, {
+          cache: "force-cache",
+        });
         if (!storeRes.ok) throw new Error("Failed to load store");
         const store = await storeRes.json();
         setStoreId(store.id);
 
-        const ordersRes = await fetch(`/api/orders?storeId=${store.id}`);
+        // Fresh orders data
+        const ordersRes = await fetch(`/api/orders?storeId=${store.id}`, {
+          cache: "no-store",
+        });
         if (!ordersRes.ok) throw new Error("Failed to load orders");
         const { data } = await ordersRes.json();
         setOrders(data);

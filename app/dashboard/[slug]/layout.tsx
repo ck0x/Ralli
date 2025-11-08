@@ -51,33 +51,34 @@ export default function DashboardLayout({
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Get user profile
-        const userRes = await fetch("/auth/profile");
+        // Fetch user profile and store details in parallel
+        const [userRes, storeRes] = await Promise.all([
+          fetch("/auth/profile", { cache: "force-cache" }),
+          fetch(`/api/stores/by-slug/${slug}`, { cache: "force-cache" }),
+        ]);
+
         if (!userRes.ok) {
           router.push("/auth/login?returnTo=" + pathname);
           return;
         }
-        const userData = await userRes.json();
-        setUser(userData);
 
-        // Check store access
-        const storeCheck = await fetch(
-          `/api/stores/check?email=${encodeURIComponent(userData.email)}`
-        );
-        if (!storeCheck.ok) throw new Error("Failed to check store access");
-
-        const { hasStore, shopSlug } = await storeCheck.json();
-
-        if (!hasStore || shopSlug !== slug) {
+        if (!storeRes.ok) {
           router.push("/");
           return;
         }
 
-        // Get store details
-        const storeRes = await fetch(`/api/stores/by-slug/${slug}`);
-        if (!storeRes.ok) throw new Error("Failed to load store");
+        const [userData, storeData] = await Promise.all([
+          userRes.json(),
+          storeRes.json(),
+        ]);
 
-        const storeData = await storeRes.json();
+        // Quick access check
+        if (storeData.owner_email !== userData.email && !storeData.is_active) {
+          router.push("/");
+          return;
+        }
+
+        setUser(userData);
         setStore(storeData);
       } catch (error) {
         console.error("Dashboard load error:", error);

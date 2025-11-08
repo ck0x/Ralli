@@ -55,15 +55,20 @@ export default function DashboardOverview() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Get store ID
-        const storeRes = await fetch(`/api/stores/by-slug/${slug}`);
+        // Get store ID first (cached from layout)
+        const storeRes = await fetch(`/api/stores/by-slug/${slug}`, {
+          cache: "force-cache",
+        });
         if (!storeRes.ok) throw new Error("Failed to load store");
         const store = await storeRes.json();
         setStoreId(store.id);
 
-        // Get dashboard stats
+        // Get dashboard stats with cache control
         const statsRes = await fetch(
-          `/api/dashboard/stats?storeId=${store.id}`
+          `/api/dashboard/stats?storeId=${store.id}`,
+          {
+            cache: "no-store", // Always get fresh stats
+          }
         );
         if (!statsRes.ok) throw new Error("Failed to load stats");
         const statsData = await statsRes.json();
