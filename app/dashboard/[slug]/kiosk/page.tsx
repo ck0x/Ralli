@@ -33,6 +33,7 @@ import {
   Clock,
   ArrowRight,
   Repeat,
+  Zap,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -61,7 +62,13 @@ interface RecentOrder {
   date: string;
 }
 
-type FormStep = "email" | "customer-type" | "details" | "review";
+type FormStep =
+  | "email"
+  | "customer-type"
+  | "customer-info"
+  | "racket-details"
+  | "string-service"
+  | "review";
 
 export default function KioskMode() {
   const params = useParams();
@@ -90,6 +97,7 @@ export default function KioskMode() {
     racketBrand: "",
     racketModel: "",
     stringType: "",
+    tension: "",
     serviceType: "standard",
     additionalNotes: "",
   });
@@ -169,7 +177,7 @@ export default function KioskMode() {
           ...prev,
           email: email.trim(),
         }));
-        setCurrentStep("details");
+        setCurrentStep("customer-info");
       }
     } catch (error) {
       console.error("Email lookup error:", error);
@@ -188,11 +196,11 @@ export default function KioskMode() {
       serviceType: order.serviceType || "standard",
       additionalNotes: order.notes || "",
     }));
-    setCurrentStep("details");
+    setCurrentStep("racket-details");
   };
 
   const handleNewOrder = () => {
-    setCurrentStep("details");
+    setCurrentStep("racket-details");
   };
 
   const resetForm = () => {
@@ -208,6 +216,7 @@ export default function KioskMode() {
       racketBrand: "",
       racketModel: "",
       stringType: "",
+      tension: "",
       serviceType: "standard",
       additionalNotes: "",
     });
@@ -325,7 +334,10 @@ export default function KioskMode() {
             {currentStep === "email" && "Enter your email to get started"}
             {currentStep === "customer-type" &&
               `Welcome back, ${customerData?.name}!`}
-            {currentStep === "details" && "Tell us about your racket"}
+            {currentStep === "customer-info" && "Tell us about yourself"}
+            {currentStep === "racket-details" && "Tell us about your racket"}
+            {currentStep === "string-service" &&
+              "Choose your string and service"}
             {currentStep === "review" && "Review your order"}
           </p>
         </div>
@@ -337,7 +349,9 @@ export default function KioskMode() {
               <div
                 className={`w-2.5 h-2.5 rounded-full ${
                   currentStep === "customer-type" ||
-                  currentStep === "details" ||
+                  currentStep === "customer-info" ||
+                  currentStep === "racket-details" ||
+                  currentStep === "string-service" ||
                   currentStep === "review"
                     ? "bg-emerald-600"
                     : "bg-gray-300"
@@ -345,7 +359,26 @@ export default function KioskMode() {
               />
               <div
                 className={`w-2.5 h-2.5 rounded-full ${
-                  currentStep === "details" || currentStep === "review"
+                  currentStep === "customer-info" ||
+                  currentStep === "racket-details" ||
+                  currentStep === "string-service" ||
+                  currentStep === "review"
+                    ? "bg-emerald-600"
+                    : "bg-gray-300"
+                }`}
+              />
+              <div
+                className={`w-2.5 h-2.5 rounded-full ${
+                  currentStep === "racket-details" ||
+                  currentStep === "string-service" ||
+                  currentStep === "review"
+                    ? "bg-emerald-600"
+                    : "bg-gray-300"
+                }`}
+              />
+              <div
+                className={`w-2.5 h-2.5 rounded-full ${
+                  currentStep === "string-service" || currentStep === "review"
                     ? "bg-emerald-600"
                     : "bg-gray-300"
                 }`}
@@ -493,76 +526,124 @@ export default function KioskMode() {
           </Card>
         )}
 
-        {/* Step 3: Racket & Service Details */}
-        {currentStep === "details" && (
+        {/* Step 3a: Customer Information (New Customers Only) */}
+        {currentStep === "customer-info" && (
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              setCurrentStep("review");
+              if (!formData.customerName || !formData.contactNumber) return;
+              setCurrentStep("racket-details");
             }}
             className="animate-fade-in-scale"
           >
-            <Card className="shadow-2xl max-h-[calc(100vh-200px)] overflow-y-auto">
-              <CardContent className="p-6 space-y-4">
-                {/* Customer Info (only for new customers) */}
-                {!isReturningCustomer && (
-                  <>
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="customerName"
-                        className="text-base font-semibold"
-                      >
-                        Your Name <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="customerName"
-                        value={formData.customerName}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            customerName: e.target.value,
-                          }))
-                        }
-                        placeholder="John Doe"
-                        className="h-12 text-base"
-                        required
-                        autoFocus
-                      />
-                    </div>
+            <Card className="shadow-2xl">
+              <CardContent className="p-8 space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <User className="h-6 w-6 text-emerald-600" />
+                  <h3 className="text-2xl font-semibold text-gray-900">
+                    Customer Information
+                  </h3>
+                </div>
 
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="contactNumber"
-                        className="text-base font-semibold"
-                      >
-                        Phone Number <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="contactNumber"
-                        type="tel"
-                        value={formData.contactNumber}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            contactNumber: e.target.value,
-                          }))
-                        }
-                        placeholder="(555) 123-4567"
-                        className="h-12 text-base"
-                        required
-                      />
-                    </div>
-                  </>
-                )}
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="customerName"
+                      className="text-base font-medium"
+                    >
+                      Name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="customerName"
+                      value={formData.customerName}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          customerName: e.target.value,
+                        }))
+                      }
+                      placeholder="John Doe"
+                      className="h-12 text-base"
+                      required
+                      autoFocus
+                    />
+                  </div>
 
-                {/* Racket Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="contactNumber"
+                      className="text-base font-medium"
+                    >
+                      Phone Number <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="contactNumber"
+                      type="tel"
+                      value={formData.contactNumber}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          contactNumber: e.target.value,
+                        }))
+                      }
+                      placeholder="(555) 123-4567"
+                      className="h-12 text-base"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    onClick={() => setCurrentStep("email")}
+                    size="lg"
+                    variant="outline"
+                    className="flex-1 h-12 text-base"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="flex-1 h-12 text-base bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 shadow-lg"
+                  >
+                    Next
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </form>
+        )}
+
+        {/* Step 3b: Racket Details */}
+        {currentStep === "racket-details" && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!formData.racketBrand || !formData.racketModel) return;
+              setCurrentStep("string-service");
+            }}
+            className="animate-fade-in-scale"
+          >
+            <Card className="shadow-2xl">
+              <CardContent className="p-8 space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <Store className="h-6 w-6 text-emerald-600" />
+                  <h3 className="text-2xl font-semibold text-gray-900">
+                    Racket Details
+                  </h3>
+                </div>
+
+                <div className="space-y-5">
                   <div className="space-y-2">
                     <Label
                       htmlFor="racketBrand"
-                      className="text-base font-semibold"
+                      className="text-base font-medium"
                     >
-                      Racket Brand <span className="text-red-500">*</span>
+                      Brand <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="racketBrand"
@@ -576,15 +657,16 @@ export default function KioskMode() {
                       placeholder="Yonex, Victor, Li-Ning"
                       className="h-12 text-base"
                       required
+                      autoFocus
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label
                       htmlFor="racketModel"
-                      className="text-base font-semibold"
+                      className="text-base font-medium"
                     >
-                      Racket Model <span className="text-red-500">*</span>
+                      Model <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="racketModel"
@@ -602,90 +684,137 @@ export default function KioskMode() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="stringType"
-                    className="text-base font-semibold"
-                  >
-                    String Type (Optional)
-                  </Label>
-                  <Input
-                    id="stringType"
-                    value={formData.stringType}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        stringType: e.target.value,
-                      }))
-                    }
-                    placeholder="BG80, Aerobite, NBG95"
-                    className="h-12 text-base"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="serviceType"
-                    className="text-base font-semibold"
-                  >
-                    Service Type
-                  </Label>
-                  <Select
-                    value={formData.serviceType}
-                    onValueChange={(value) =>
-                      setFormData((prev) => ({ ...prev, serviceType: value }))
-                    }
-                  >
-                    <SelectTrigger className="h-12 text-base">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="standard" className="text-base py-2">
-                        Standard Stringing
-                      </SelectItem>
-                      <SelectItem value="express" className="text-base py-2">
-                        Express Service
-                      </SelectItem>
-                      <SelectItem value="restring" className="text-base py-2">
-                        Restring
-                      </SelectItem>
-                      <SelectItem value="repair" className="text-base py-2">
-                        Repair
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="additionalNotes"
-                    className="text-base font-semibold"
-                  >
-                    Special Requests (Optional)
-                  </Label>
-                  <Textarea
-                    id="additionalNotes"
-                    value={formData.additionalNotes}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        additionalNotes: e.target.value,
-                      }))
-                    }
-                    placeholder="Tension preferences, special instructions..."
-                    className="text-sm min-h-16"
-                    rows={2}
-                  />
-                </div>
-
-                <div className="flex gap-3">
+                <div className="flex gap-3 pt-4">
                   <Button
                     type="button"
                     onClick={() =>
                       setCurrentStep(
-                        isReturningCustomer ? "customer-type" : "email"
+                        isReturningCustomer ? "customer-type" : "customer-info"
                       )
                     }
+                    size="lg"
+                    variant="outline"
+                    className="flex-1 h-12 text-base"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="flex-1 h-12 text-base bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 shadow-lg"
+                  >
+                    Next
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </form>
+        )}
+
+        {/* Step 3c: String & Service */}
+        {currentStep === "string-service" && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setCurrentStep("review");
+            }}
+            className="animate-fade-in-scale"
+          >
+            <Card className="shadow-2xl">
+              <CardContent className="p-8 space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <Zap className="h-6 w-6 text-emerald-600" />
+                  <h3 className="text-2xl font-semibold text-gray-900">
+                    String & Service
+                  </h3>
+                </div>
+
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="stringType"
+                      className="text-base font-medium"
+                    >
+                      String Product
+                    </Label>
+                    <Input
+                      id="stringType"
+                      value={formData.stringType}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          stringType: e.target.value,
+                        }))
+                      }
+                      placeholder="BG80, Aerobite, NBG95"
+                      className="h-12 text-base"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      className="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1 mt-1"
+                    >
+                      <span>Not sure on string? We can help</span>
+                      <ArrowRight className="h-3 w-3" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="tension" className="text-base font-medium">
+                      Tension (lbs)
+                    </Label>
+                    <Input
+                      id="tension"
+                      type="text"
+                      value={formData.tension}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          tension: e.target.value,
+                        }))
+                      }
+                      placeholder="24-26"
+                      className="h-12 text-base"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="serviceType"
+                      className="text-base font-medium"
+                    >
+                      Service Speed
+                    </Label>
+                    <Select
+                      value={formData.serviceType}
+                      onValueChange={(value) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          serviceType: value,
+                        }))
+                      }
+                    >
+                      <SelectTrigger className="h-12 text-base">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="standard" className="text-base py-3">
+                          Standard
+                        </SelectItem>
+                        <SelectItem value="express" className="text-base py-3">
+                          Express
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    onClick={() => setCurrentStep("racket-details")}
                     size="lg"
                     variant="outline"
                     className="flex-1 h-12 text-base"
@@ -738,36 +867,39 @@ export default function KioskMode() {
                     <p className="text-lg font-semibold">
                       {formData.racketBrand} {formData.racketModel}
                     </p>
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-3">
+                    <p className="text-xs text-gray-500 mb-1">
+                      String & Service
+                    </p>
                     {formData.stringType && (
                       <p className="text-sm text-gray-600">
                         String: {formData.stringType}
                       </p>
                     )}
-                  </div>
-
-                  <div className="border-t border-gray-200 pt-3">
-                    <p className="text-xs text-gray-500 mb-1">Service</p>
-                    <p className="text-lg font-semibold capitalize">
-                      {formData.serviceType}
-                    </p>
-                    {formData.additionalNotes && (
-                      <p className="text-sm text-gray-600 mt-1">
-                        {formData.additionalNotes}
+                    {formData.tension && (
+                      <p className="text-sm text-gray-600">
+                        Tension: {formData.tension} lbs
                       </p>
                     )}
+                    <p className="text-sm text-gray-600">
+                      Speed:{" "}
+                      <span className="capitalize">{formData.serviceType}</span>
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
                   <Button
                     type="button"
-                    onClick={() => setCurrentStep("details")}
+                    onClick={() => setCurrentStep("string-service")}
                     size="lg"
                     variant="outline"
                     className="flex-1 h-12 text-base"
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    Edit
+                    Back
                   </Button>
                   <Button
                     type="submit"
