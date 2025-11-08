@@ -6,7 +6,7 @@ const sql = neon(process.env.DATABASE_URL!);
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and admin access
@@ -16,7 +16,8 @@ export async function PATCH(
     }
 
     const { action, reason } = await request.json();
-    const applicationId = parseInt(params.id);
+    const resolvedParams = await params;
+    const applicationId = parseInt(resolvedParams.id);
 
     if (!["approve", "reject"].includes(action)) {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 });
@@ -71,7 +72,7 @@ export async function PATCH(
 // Optional: DELETE endpoint to remove an application
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and admin access
@@ -80,7 +81,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const applicationId = parseInt(params.id);
+    const resolvedParams = await params;
+    const applicationId = parseInt(resolvedParams.id);
 
     await sql`
       DELETE FROM store_applications

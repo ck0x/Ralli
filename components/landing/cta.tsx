@@ -3,8 +3,40 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 export function CTA() {
+  const [userStore, setUserStore] = useState<{
+    hasStore: boolean;
+    shopSlug: string | null;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkUserStore = async () => {
+      try {
+        const res = await fetch("/auth/profile");
+        if (res.ok) {
+          const userData = await res.json();
+          // Check if user has a store
+          const storeCheck = await fetch(
+            `/api/stores/check?email=${encodeURIComponent(userData.email)}`
+          );
+          if (storeCheck.ok) {
+            const storeData = await storeCheck.json();
+            setUserStore(storeData);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to check user store:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkUserStore();
+  }, []);
+
   return (
     <section className="py-20 bg-gradient-to-r from-emerald-600 to-blue-600">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,15 +50,27 @@ export function CTA() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/apply">
-              <Button
-                size="lg"
-                className="group bg-white text-emerald-600 hover:bg-gray-50 px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
-              >
-                Get Started Free
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
+            {!loading && userStore?.hasStore && userStore.shopSlug ? (
+              <Link href={`/dashboard/${userStore.shopSlug}`}>
+                <Button
+                  size="lg"
+                  className="group bg-white text-emerald-600 hover:bg-gray-50 px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
+                >
+                  Go to Dashboard
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/apply">
+                <Button
+                  size="lg"
+                  className="group bg-white text-emerald-600 hover:bg-gray-50 px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
+                >
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            )}
             <Link href="/contact">
               <Button
                 size="lg"

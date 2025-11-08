@@ -12,6 +12,10 @@ export function Navigation() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userStore, setUserStore] = useState<{
+    hasStore: boolean;
+    shopSlug: string | null;
+  } | null>(null);
 
   useEffect(() => {
     // Fetch user profile from Auth0
@@ -40,6 +44,16 @@ export function Navigation() {
             .catch((err) => {
               console.error("❌ Admin check error:", err);
               setIsAdmin(false);
+            });
+
+          // Check if user has a store
+          fetch(`/api/stores/check?email=${encodeURIComponent(data.email)}`)
+            .then((res) => res.json())
+            .then((storeData) => {
+              setUserStore(storeData);
+            })
+            .catch((err) => {
+              console.error("Store check error:", err);
             });
         }
       })
@@ -90,11 +104,19 @@ export function Navigation() {
                 />
               </Link>
             ))}
-            <Link href="/apply">
-              <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800">
-                Get Started
-              </Button>
-            </Link>
+            {!loading && userStore?.hasStore && userStore.shopSlug ? (
+              <Link href={`/dashboard/${userStore.shopSlug}`}>
+                <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800">
+                  Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/apply">
+                <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800">
+                  Get Started
+                </Button>
+              </Link>
+            )}
             {!loading && <AuthButtons user={user} />}
           </div>
 
@@ -133,11 +155,19 @@ export function Navigation() {
                 </Link>
               ))}
               <div className="px-3 py-2">
-                <Link href="/apply">
-                  <Button className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800">
-                    Get Started
-                  </Button>
-                </Link>
+                {!loading && userStore?.hasStore && userStore.shopSlug ? (
+                  <Link href={`/dashboard/${userStore.shopSlug}`}>
+                    <Button className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800">
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/apply">
+                    <Button className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800">
+                      Get Started
+                    </Button>
+                  </Link>
+                )}
               </div>
               <div className="px-3 py-2">
                 {!loading && <AuthButtons user={user} isMobile={true} />}
