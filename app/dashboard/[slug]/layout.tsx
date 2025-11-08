@@ -120,6 +120,13 @@ export default function DashboardLayout({
     },
   ];
 
+  const kioskItem = {
+    name: "Kiosk Mode",
+    href: `/dashboard/${slug}/kiosk`,
+    icon: Store,
+    highlight: true,
+  };
+
   const isActive = (item: (typeof navItems)[0]) => {
     if (item.exact) {
       return pathname === item.href;
@@ -243,6 +250,27 @@ export default function DashboardLayout({
                 </Link>
               );
             })}
+
+            {/* Kiosk Mode - Highlighted */}
+            <div className="pt-4 mt-4 border-t border-gray-200">
+              <Link
+                href={kioskItem.href}
+                onClick={() => setSidebarOpen(false)}
+                className={`
+                  flex items-center gap-3 px-4 py-3 rounded-lg
+                  bg-gradient-to-r from-emerald-600 to-blue-600
+                  text-white font-medium
+                  hover:from-emerald-700 hover:to-blue-700
+                  transition-all duration-150 shadow-md
+                  ${
+                    pathname === kioskItem.href ? "ring-2 ring-emerald-300" : ""
+                  }
+                `}
+              >
+                <Store className="h-5 w-5" />
+                {kioskItem.name}
+              </Link>
+            </div>
           </nav>
         </aside>
 

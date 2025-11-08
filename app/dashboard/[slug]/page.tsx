@@ -110,12 +110,36 @@ export default function DashboardOverview() {
             Welcome back! Here's what's happening today.
           </p>
         </div>
-        <Link href={`/dashboard/${slug}/orders/new`}>
-          <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700">
-            <Plus className="h-4 w-4 mr-2" />
-            New Order
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href={`/dashboard/${slug}/kiosk`}>
+            <Button
+              variant="outline"
+              className="border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+              Kiosk Mode
+            </Button>
+          </Link>
+          <Link href={`/dashboard/${slug}/orders/new`}>
+            <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700">
+              <Plus className="h-4 w-4 mr-2" />
+              New Order
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Grid */}
