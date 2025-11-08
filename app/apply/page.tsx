@@ -49,7 +49,8 @@ export default function ApplyPage() {
   const [submitting, setSubmitting] = useState(false);
   const [checkingSlug, setCheckingSlug] = useState(false);
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
-  const [slugCheckTimeout, setSlugCheckTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [slugCheckTimeout, setSlugCheckTimeout] =
+    useState<NodeJS.Timeout | null>(null);
 
   const [formData, setFormData] = useState({
     businessName: "",
