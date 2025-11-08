@@ -119,7 +119,7 @@ export default function DashboardLayout({
     },
   ];
 
-  const isActive = (item: typeof navItems[0]) => {
+  const isActive = (item: (typeof navItems)[0]) => {
     if (item.exact) {
       return pathname === item.href;
     }
@@ -176,7 +176,10 @@ export default function DashboardLayout({
 
             {/* Right: User Menu */}
             <div className="flex items-center gap-4">
-              <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
+              <Link
+                href="/"
+                className="text-sm text-gray-600 hover:text-gray-900"
+              >
                 Visit Site
               </Link>
               <div className="flex items-center gap-3">
@@ -210,7 +213,9 @@ export default function DashboardLayout({
           fixed lg:sticky top-16 left-0 z-40 h-[calc(100vh-4rem)]
           w-64 bg-white border-r border-gray-200
           transition-transform duration-200 ease-in-out
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          }
         `}
         >
           <nav className="p-4 space-y-1">

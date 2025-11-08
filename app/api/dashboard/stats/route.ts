@@ -9,10 +9,7 @@ export async function GET(request: NextRequest) {
     const storeId = searchParams.get("storeId");
 
     if (!storeId) {
-      return NextResponse.json(
-        { error: "Store ID required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Store ID required" }, { status: 400 });
     }
 
     const storeIdNum = parseInt(storeId);

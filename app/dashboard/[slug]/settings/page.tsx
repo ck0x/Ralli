@@ -17,9 +17,7 @@ export default function SettingsPage() {
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
             Coming Soon
           </h3>
-          <p className="text-gray-600">
-            Store settings will be available here
-          </p>
+          <p className="text-gray-600">Store settings will be available here</p>
         </CardContent>
       </Card>
     </div>

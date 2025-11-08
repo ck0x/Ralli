@@ -114,7 +114,9 @@ export default function NewOrderPage() {
 
       <div>
         <h1 className="text-3xl font-bold text-gray-900">New Order</h1>
-        <p className="text-gray-600 mt-1">Create a new racket stringing order</p>
+        <p className="text-gray-600 mt-1">
+          Create a new racket stringing order
+        </p>
       </div>
 
       {/* Form */}
@@ -176,7 +178,10 @@ export default function NewOrderPage() {
                       type="email"
                       value={formData.email}
                       onChange={(e) =>
-                        setFormData((prev) => ({ ...prev, email: e.target.value }))
+                        setFormData((prev) => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
                       }
                       placeholder="john@example.com"
                     />
@@ -189,9 +194,7 @@ export default function NewOrderPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Racket Information</CardTitle>
-                <CardDescription>
-                  Specify the racket details
-                </CardDescription>
+                <CardDescription>Specify the racket details</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -319,7 +322,9 @@ export default function NewOrderPage() {
                   {formData.contactNumber && (
                     <div>
                       <div className="text-gray-600">Phone</div>
-                      <div className="font-medium">{formData.contactNumber}</div>
+                      <div className="font-medium">
+                        {formData.contactNumber}
+                      </div>
                     </div>
                   )}
 

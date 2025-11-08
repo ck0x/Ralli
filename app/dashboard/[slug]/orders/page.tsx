@@ -255,9 +255,7 @@ export default function OrdersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
-          <p className="text-gray-600 mt-1">
-            Manage all your stringing orders
-          </p>
+          <p className="text-gray-600 mt-1">Manage all your stringing orders</p>
         </div>
         <Link href={`/dashboard/${slug}/orders/new`}>
           <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700">
@@ -304,7 +302,8 @@ export default function OrdersPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>
-              {filteredOrders.length} Order{filteredOrders.length !== 1 ? "s" : ""}
+              {filteredOrders.length} Order
+              {filteredOrders.length !== 1 ? "s" : ""}
             </CardTitle>
             <Button variant="outline" size="sm">
               <Download className="h-4 w-4 mr-2" />
@@ -377,9 +376,7 @@ export default function OrdersPage() {
                               In Progress
                             </SelectItem>
                             <SelectItem value="ready">Ready</SelectItem>
-                            <SelectItem value="picked-up">
-                              Picked Up
-                            </SelectItem>
+                            <SelectItem value="picked-up">Picked Up</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
@@ -399,7 +396,11 @@ export default function OrdersPage() {
                           <Link
                             href={`/dashboard/${slug}/orders/${order.job_id}`}
                           >
-                            <Button variant="ghost" size="sm" title="View Details">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              title="View Details"
+                            >
                               <Eye className="h-4 w-4" />
                             </Button>
                           </Link>

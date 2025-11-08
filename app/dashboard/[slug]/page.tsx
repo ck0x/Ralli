@@ -196,7 +196,9 @@ export default function DashboardOverview() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Recent Orders</CardTitle>
-              <CardDescription>Latest racket stringing requests</CardDescription>
+              <CardDescription>
+                Latest racket stringing requests
+              </CardDescription>
             </div>
             <Link href={`/dashboard/${slug}/orders`}>
               <Button variant="ghost" size="sm">
