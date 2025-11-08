@@ -48,6 +48,9 @@ export default function DashboardLayout({
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Check if we're in kiosk mode
+  const isKioskMode = pathname?.includes("/kiosk");
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -147,6 +150,11 @@ export default function DashboardLayout({
 
   if (!store) {
     return null;
+  }
+
+  // Render kiosk mode without dashboard chrome
+  if (isKioskMode) {
+    return <div className="min-h-screen">{children}</div>;
   }
 
   return (
