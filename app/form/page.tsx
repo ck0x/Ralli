@@ -27,6 +27,8 @@ import {
   Maximize2,
   Minimize2,
 } from "lucide-react";
+import { LanguageSelector } from "@/components/language-selector";
+import { type Language, getTranslations } from "@/lib/translations";
 
 interface FormData {
   customerName: string;
@@ -42,6 +44,10 @@ interface FormData {
 export default function CustomerIntakeForm() {
   // Authentication: This form now requires login so we can track which staff member submitted the order
   const [currentUser, setCurrentUser] = useState<any>(null);
+
+  // Language state
+  const [language, setLanguage] = useState<Language>('en');
+  const t = getTranslations(language);
 
   // fullscreen / kiosk state
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -260,13 +266,13 @@ export default function CustomerIntakeForm() {
                 </div>
               </div>
               <h2 className="text-3xl font-bold text-slate-800 mb-3">
-                Thank You!
+                {t.thankYou}
               </h2>
               <p className="text-slate-600 mb-2 text-lg leading-relaxed">
-                Your order has been recorded.
+                {t.orderRecorded}
               </p>
               <p className="text-slate-500 text-sm">
-                Ready for next submission…
+                {t.readyForNext}
               </p>
             </CardContent>
           </Card>
@@ -287,10 +293,15 @@ export default function CustomerIntakeForm() {
         </button>
         <Card className="shadow-xl border border-slate-200 bg-white mt-8">
           <CardHeader className="bg-slate-50 rounded-t-lg border-b border-slate-200">
-            <CardTitle className="text-2xl flex items-center gap-3 text-slate-800">
-              <FileText className="h-6 w-6 text-blue-600" /> Customer & Racket
-              Information
-            </CardTitle>
+            <div className="flex items-center justify-between gap-4">
+              <CardTitle className="text-2xl flex items-center gap-3 text-slate-800">
+                <FileText className="h-6 w-6 text-blue-600" /> {t.formTitle}
+              </CardTitle>
+              <LanguageSelector
+                currentLanguage={language}
+                onLanguageChange={(lang) => setLanguage(lang)}
+              />
+            </div>
           </CardHeader>
           <CardContent className="p-8">
             <form onSubmit={handleSubmit} className="space-y-8">
@@ -300,7 +311,7 @@ export default function CustomerIntakeForm() {
                     <User className="h-5 w-5 text-blue-600" />
                   </div>
                   <h3 className="text-xl font-semibold text-slate-800">
-                    Customer Details
+                    {t.customerDetails}
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -309,11 +320,11 @@ export default function CustomerIntakeForm() {
                       htmlFor="customerName"
                       className="text-base font-medium flex items-center gap-2 text-slate-700"
                     >
-                      <User className="h-4 w-4 text-blue-600" /> Full Name *
+                      <User className="h-4 w-4 text-blue-600" /> {t.fullName} *
                     </Label>
                     <Input
                       id="customerName"
-                      placeholder="Enter your full name"
+                      placeholder={t.enterFullName}
                       value={formData.customerName}
                       onChange={(e) =>
                         handleInputChange("customerName", e.target.value)
@@ -327,12 +338,12 @@ export default function CustomerIntakeForm() {
                       htmlFor="contactNumber"
                       className="text-base font-medium flex items-center gap-2 text-slate-700"
                     >
-                      <Phone className="h-4 w-4 text-blue-600" /> Contact Number
+                      <Phone className="h-4 w-4 text-blue-600" /> {t.contactNumber}
                       *
                     </Label>
                     <Input
                       id="contactNumber"
-                      placeholder="Enter your phone number"
+                      placeholder={t.enterPhoneNumber}
                       value={formData.contactNumber}
                       onChange={(e) =>
                         handleInputChange("contactNumber", e.target.value)
@@ -347,12 +358,12 @@ export default function CustomerIntakeForm() {
                     htmlFor="email"
                     className="text-base font-medium flex items-center gap-2 text-slate-700"
                   >
-                    <Mail className="h-4 w-4 text-slate-500" /> Email Address
+                    <Mail className="h-4 w-4 text-slate-500" /> {t.emailAddress}
                   </Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Enter your email (optional)"
+                    placeholder={t.enterEmail}
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
                     className="text-lg p-4 h-14 border-2 border-slate-200 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all duration-200 rounded-lg"
@@ -365,7 +376,7 @@ export default function CustomerIntakeForm() {
                     <Zap className="h-5 w-5 text-blue-600" />
                   </div>
                   <h3 className="text-xl font-semibold text-slate-800">
-                    Racket Details
+                    {t.racketDetails}
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -374,14 +385,14 @@ export default function CustomerIntakeForm() {
                       htmlFor="racketBrand"
                       className="text-base font-medium text-slate-700"
                     >
-                      Racket Brand *
+                      {t.racketBrand} *
                     </Label>
                     <Select
                       value={formData.racketBrand}
                       onValueChange={(v) => handleInputChange("racketBrand", v)}
                     >
                       <SelectTrigger className="text-lg h-14 border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg">
-                        <SelectValue placeholder="Select brand" />
+                        <SelectValue placeholder={t.selectBrand} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="yonex">Yonex</SelectItem>
@@ -389,7 +400,7 @@ export default function CustomerIntakeForm() {
                         <SelectItem value="li-ning">Li-Ning</SelectItem>
                         <SelectItem value="babolat">Babolat</SelectItem>
                         <SelectItem value="wilson">Wilson</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
+                        <SelectItem value="other">{t.other}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -398,11 +409,11 @@ export default function CustomerIntakeForm() {
                       htmlFor="racketModel"
                       className="text-base font-medium text-slate-700"
                     >
-                      Racket Model *
+                      {t.racketModel} *
                     </Label>
                     <Input
                       id="racketModel"
-                      placeholder="Enter racket model"
+                      placeholder={t.enterRacketModel}
                       value={formData.racketModel}
                       onChange={(e) =>
                         handleInputChange("racketModel", e.target.value)
@@ -417,14 +428,14 @@ export default function CustomerIntakeForm() {
                     htmlFor="stringType"
                     className="text-base font-medium text-slate-700"
                   >
-                    String Type Preference
+                    {t.stringTypePreference}
                   </Label>
                   <Select
                     value={formData.stringType}
                     onValueChange={(v) => handleInputChange("stringType", v)}
                   >
                     <SelectTrigger className="text-lg h-14 border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg">
-                      <SelectValue placeholder="Select string type (optional)" />
+                      <SelectValue placeholder={t.selectStringType} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="bg65">BG65</SelectItem>
@@ -433,7 +444,7 @@ export default function CustomerIntakeForm() {
                       <SelectItem value="aerosonic">Aerosonic</SelectItem>
                       <SelectItem value="nanogy-98">Nanogy 98</SelectItem>
                       <SelectItem value="other">
-                        Other (specify in notes)
+                        {t.otherStringType}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -445,7 +456,7 @@ export default function CustomerIntakeForm() {
                     <Zap className="h-5 w-5 text-blue-600" />
                   </div>
                   <h3 className="text-xl font-semibold text-slate-800">
-                    Service Type
+                    {t.serviceType}
                   </h3>
                 </div>
                 <RadioGroup
@@ -464,10 +475,10 @@ export default function CustomerIntakeForm() {
                     />
                     <div className="flex-1">
                       <div className="text-lg font-semibold block text-slate-800">
-                        Standard Service
+                        {t.standardService}
                       </div>
                       <p className="text-slate-600 mt-1">
-                        Regular stringing service
+                        {t.standardServiceDesc}
                       </p>
                     </div>
                   </Label>
@@ -482,10 +493,10 @@ export default function CustomerIntakeForm() {
                     />
                     <div className="flex-1">
                       <div className="text-lg font-semibold block text-slate-800">
-                        Premium Service
+                        {t.premiumService}
                       </div>
                       <p className="text-slate-600 mt-1">
-                        Express + quality guarantee
+                        {t.premiumServiceDesc}
                       </p>
                     </div>
                   </Label>
@@ -496,12 +507,11 @@ export default function CustomerIntakeForm() {
                   htmlFor="additionalNotes"
                   className="text-base font-medium flex items-center gap-2 text-slate-700"
                 >
-                  <FileText className="h-4 w-4 text-blue-600" /> Additional
-                  Notes
+                  <FileText className="h-4 w-4 text-blue-600" /> {t.additionalNotes}
                 </Label>
                 <Textarea
                   id="additionalNotes"
-                  placeholder="Any special instructions or requests..."
+                  placeholder={t.additionalNotesPlaceholder}
                   value={formData.additionalNotes}
                   onChange={(e) =>
                     handleInputChange("additionalNotes", e.target.value)
@@ -520,7 +530,7 @@ export default function CustomerIntakeForm() {
                   disabled={submitting}
                   className="w-full text-xl py-8 h-16 font-bold bg-blue-600 hover:bg-blue-700 disabled:opacity-60 transition-colors duration-200 shadow-lg hover:shadow-xl text-white rounded-lg"
                 >
-                  {submitting ? "Submitting..." : "Submit Order"}
+                  {submitting ? t.submitting : t.submitOrder}
                 </Button>
               </div>
             </form>
