@@ -12,8 +12,8 @@ export async function middleware(request: NextRequest) {
     }
 
     // List of paths that should be protected (require authentication)
-    // /form is now protected so we can track which user submits orders
-    const protectedPaths = ["/orders", "/products", "/form", "/api/orders"];
+    // /form is public (kiosk intake) per README - customers can submit without login
+    const protectedPaths = ["/orders", "/products", "/api/orders"];
 
     // Check if current path should be protected
     const isProtectedPath = protectedPaths.some((protectedPath) =>
