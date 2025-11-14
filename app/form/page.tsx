@@ -58,6 +58,8 @@ export default function CustomerIntakeForm() {
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 4;
 
   // Fetch current user info
   useEffect(() => {
@@ -240,6 +242,34 @@ export default function CustomerIntakeForm() {
       serviceType: "standard",
       additionalNotes: "",
     });
+    setCurrentStep(1);
+  };
+
+  const nextStep = () => {
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const canProceedToNextStep = () => {
+    switch (currentStep) {
+      case 1:
+        return formData.customerName.trim() && formData.contactNumber.trim();
+      case 2:
+        return formData.racketBrand && formData.racketModel.trim();
+      case 3:
+        return formData.serviceType;
+      case 4:
+        return true;
+      default:
+        return false;
+    }
   };
 
   return (
@@ -291,10 +321,46 @@ export default function CustomerIntakeForm() {
               <FileText className="h-6 w-6 text-blue-600" /> Customer & Racket
               Information
             </CardTitle>
+            {/* Progress Indicator */}
+            <div className="flex items-center justify-center gap-2 mt-6">
+              {[1, 2, 3, 4].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
+                      step === currentStep
+                        ? "bg-blue-600 text-white ring-4 ring-blue-200"
+                        : step < currentStep
+                        ? "bg-blue-500 text-white"
+                        : "bg-slate-200 text-slate-500"
+                    }`}
+                  >
+                    {step}
+                  </div>
+                  {step < 4 && (
+                    <div
+                      className={`w-12 h-1 mx-1 transition-all duration-300 ${
+                        step < currentStep ? "bg-blue-500" : "bg-slate-200"
+                      }`}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="text-center mt-4">
+              <p className="text-sm font-medium text-slate-600">
+                Step {currentStep} of {totalSteps}:{" "}
+                {currentStep === 1 && "Customer Details"}
+                {currentStep === 2 && "Racket Information"}
+                {currentStep === 3 && "Service Type"}
+                {currentStep === 4 && "Review & Submit"}
+              </p>
+            </div>
           </CardHeader>
           <CardContent className="p-8">
             <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="space-y-6 section customer-section">
+              {/* Step 1: Customer Details */}
+              {currentStep === 1 && (
+              <div className="space-y-6 section customer-section animate-in fade-in duration-500">
                 <div className="flex items-center gap-3 pb-4 border-b border-slate-200">
                   <div className="p-2 bg-blue-100 rounded-lg">
                     <User className="h-5 w-5 text-blue-600" />
@@ -359,7 +425,11 @@ export default function CustomerIntakeForm() {
                   />
                 </div>
               </div>
-              <div className="space-y-6 section racket-section">
+              )}
+
+              {/* Step 2: Racket Details */}
+              {currentStep === 2 && (
+              <div className="space-y-6 section racket-section animate-in fade-in duration-500">
                 <div className="flex items-center gap-3 pb-4 border-b border-slate-200">
                   <div className="p-2 bg-blue-100 rounded-lg">
                     <Zap className="h-5 w-5 text-blue-600" />
@@ -439,7 +509,11 @@ export default function CustomerIntakeForm() {
                   </Select>
                 </div>
               </div>
-              <div className="space-y-6 section service-section">
+              )}
+
+              {/* Step 3: Service Type */}
+              {currentStep === 3 && (
+              <div className="space-y-6 section service-section animate-in fade-in duration-500">
                 <div className="flex items-center gap-3 pb-4 border-b border-slate-200">
                   <div className="p-2 bg-blue-100 rounded-lg">
                     <Zap className="h-5 w-5 text-blue-600" />
@@ -491,7 +565,49 @@ export default function CustomerIntakeForm() {
                   </Label>
                 </RadioGroup>
               </div>
-              <div className="space-y-3 section notes-section">
+              )}
+
+              {/* Step 4: Review & Additional Notes */}
+              {currentStep === 4 && (
+              <div className="space-y-6 animate-in fade-in duration-500">
+                {/* Review Summary */}
+                <div className="space-y-4 p-6 bg-slate-50 rounded-lg border border-slate-200">
+                  <h3 className="text-xl font-semibold text-slate-800 mb-4">Review Your Information</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <p className="text-sm text-slate-500">Customer Name</p>
+                      <p className="text-base font-medium text-slate-800">{formData.customerName || "—"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-slate-500">Contact Number</p>
+                      <p className="text-base font-medium text-slate-800">{formData.contactNumber || "—"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-slate-500">Email</p>
+                      <p className="text-base font-medium text-slate-800">{formData.email || "Not provided"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-slate-500">Racket Brand</p>
+                      <p className="text-base font-medium text-slate-800 capitalize">{formData.racketBrand || "—"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-slate-500">Racket Model</p>
+                      <p className="text-base font-medium text-slate-800">{formData.racketModel || "—"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-slate-500">String Type</p>
+                      <p className="text-base font-medium text-slate-800">{formData.stringType || "Not specified"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-slate-500">Service Type</p>
+                      <p className="text-base font-medium text-slate-800 capitalize">{formData.serviceType || "—"}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Notes */}
+                <div className="space-y-3 section notes-section">
                 <Label
                   htmlFor="additionalNotes"
                   className="text-base font-medium flex items-center gap-2 text-slate-700"
@@ -509,7 +625,32 @@ export default function CustomerIntakeForm() {
                   className="text-lg p-4 min-h-[120px] border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 rounded-lg resize-none"
                 />
               </div>
-              <div className="section submit-section space-y-4">
+              </div>
+              )}
+
+              {/* Navigation Buttons */}
+              <div className="section navigation-section flex gap-4 pt-6 border-t border-slate-200">
+                {currentStep > 1 && (
+                  <Button
+                    type="button"
+                    onClick={prevStep}
+                    variant="outline"
+                    className="flex-1 text-lg py-6 h-14 font-semibold border-2 border-slate-300 hover:bg-slate-100 transition-colors duration-200 rounded-lg"
+                  >
+                    ← Back
+                  </Button>
+                )}
+                {currentStep < totalSteps ? (
+                  <Button
+                    type="button"
+                    onClick={nextStep}
+                    disabled={!canProceedToNextStep()}
+                    className="flex-1 text-lg py-6 h-14 font-semibold bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 text-white rounded-lg"
+                  >
+                    Next →
+                  </Button>
+                ) : (
+              <div className="section submit-section space-y-4 flex-1">
                 {errorMsg && (
                   <div className="error-message text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3">
                     {errorMsg}
@@ -522,6 +663,8 @@ export default function CustomerIntakeForm() {
                 >
                   {submitting ? "Submitting..." : "Submit Order"}
                 </Button>
+              </div>
+                )}
               </div>
             </form>
           </CardContent>
