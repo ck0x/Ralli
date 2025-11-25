@@ -24,6 +24,7 @@ import {
   Search,
   Trash2,
   Download,
+  Printer,
 } from "lucide-react";
 import {
   Table,
@@ -34,6 +35,8 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { AuthRequired } from "@/components/auth-required";
+import { PrinterProvider } from "@/hooks/use-printer";
+import { PrinterSettingsModal } from "@/components/printer-settings-modal";
 
 interface OrderRecord {
   id: string;
@@ -397,6 +400,7 @@ export default function OrdersPage() {
   const archiveCount = orders.filter((o) => o.status === "picked-up").length;
 
   return (
+    <PrinterProvider>
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-100 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex flex-col 2xl:flex-row gap-4 2xl:items-end justify-between">
@@ -448,6 +452,13 @@ export default function OrdersPage() {
             >
               <Download className="h-4 w-4" />
             </Button>
+            <PrinterSettingsModal
+              trigger={
+                <Button variant="outline" size="icon" title="Printer Settings">
+                  <Printer className="h-4 w-4" />
+                </Button>
+              }
+            />
             {/* Removed Clear All button to avoid accidental mass deletion */}
           </div>
         </div>
@@ -710,5 +721,6 @@ export default function OrdersPage() {
         )}
       </div>
     </div>
+    </PrinterProvider>
   );
 }
