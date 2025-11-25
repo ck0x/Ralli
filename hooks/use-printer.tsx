@@ -38,8 +38,8 @@ export function PrinterProvider({ children }: { children: React.ReactNode }) {
         const parsed = JSON.parse(stored);
         setSettings({ ...defaultSettings, ...parsed, isConnected: false });
       }
-    } catch {
-      // Ignore errors
+    } catch (error) {
+      console.warn("Failed to load printer settings from localStorage:", error);
     }
   }, []);
 
@@ -47,8 +47,8 @@ export function PrinterProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    } catch {
-      // Ignore errors
+    } catch (error) {
+      console.warn("Failed to save printer settings to localStorage:", error);
     }
   }, [settings]);
 
@@ -83,7 +83,8 @@ export function PrinterProvider({ children }: { children: React.ReactNode }) {
       });
       
       return connected;
-    } catch {
+    } catch (error) {
+      console.error("Failed to test printer connection:", error);
       updateSettings({ isConnected: false });
       return false;
     } finally {

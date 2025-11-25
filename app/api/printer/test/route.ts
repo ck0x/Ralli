@@ -1,22 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
-// Simple schema validation
-interface TestPrinterRequest {
-  ipAddress: string;
-  port: number;
-}
-
-function validateRequest(body: unknown): body is TestPrinterRequest {
-  if (!body || typeof body !== "object") return false;
-  const obj = body as Record<string, unknown>;
-  return (
-    typeof obj.ipAddress === "string" &&
-    obj.ipAddress.length > 0 &&
-    typeof obj.port === "number" &&
-    obj.port > 0 &&
-    obj.port <= 65535
-  );
-}
+// Schema validation using Zod (consistent with existing API patterns)
+const testPrinterSchema = z.object({
+  ipAddress: z.string().min(1, "IP address is required"),
+  port: z.number().int().min(1).max(65535),
+});
 
 function isValidIpAddress(ip: string): boolean {
   const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
@@ -30,16 +19,20 @@ function isValidIpAddress(ip: string): boolean {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json().catch(() => null);
+    const body = await req.json().catch((err) => {
+      console.error("Failed to parse request body:", err);
+      return null;
+    });
 
-    if (!validateRequest(body)) {
+    const parsed = testPrinterSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: "Invalid request. IP address and port are required." },
+        { success: false, error: parsed.error.format() },
         { status: 400 }
       );
     }
 
-    const { ipAddress, port } = body;
+    const { ipAddress, port } = parsed.data;
 
     // Validate IP address format
     if (!isValidIpAddress(ipAddress)) {
