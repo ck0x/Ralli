@@ -1,0 +1,63 @@
+{
+  "appName": "랠리 스트링",
+  "kioskTitle": "라켓 스트링 신청서",
+  "adminTitle": "관리자 대시보드",
+  "steps": {
+    "lookup": "프로필 찾기",
+    "personal": "개인 정보",
+    "racket": "라켓 정보",
+    "string": "스트링 선택",
+    "review": "검토 및 제출"
+  },
+  "actions": {
+    "next": "다음",
+    "back": "이전",
+    "submit": "주문 제출",
+    "lookup": "조회",
+    "useProfile": "프로필 사용",
+    "createNew": "새로 만들기",
+    "markCompleted": "완료로 변경",
+    "markInProgress": "진행 중으로 변경",
+    "refresh": "새로고침",
+    "signIn": "로그인"
+  },
+  "fields": {
+    "phone": "전화번호",
+    "name": "이름",
+    "email": "이메일 (선택)",
+    "preferredLanguage": "선호 언어",
+    "racketBrand": "라켓 브랜드",
+    "racketModel": "라켓 모델",
+    "stringCategory": "스트링 종류",
+    "stringFocus": "플레이 스타일",
+    "stringBrand": "스트링 브랜드",
+    "stringModel": "스트링 모델",
+    "tension": "장력 (파운드)",
+    "notes": "메모"
+  },
+  "messages": {
+    "lookupHelp": "전화번호로 저장된 프로필을 찾습니다.",
+    "profileFound": "프로필을 찾았습니다. 사용하거나 수정할 수 있습니다.",
+    "profileNotFound": "프로필을 찾지 못했습니다. 정보를 입력해 주세요.",
+    "adminOnlySubmit": "직원이 로그인해야 주문을 제출할 수 있습니다.",
+    "adminOnlyView": "관리자 권한이 필요합니다.",
+    "submitSuccess": "주문이 접수되었습니다. 완료 시 안내해 드립니다.",
+    "submitError": "오류가 발생했습니다. 직원에게 문의해 주세요.",
+    "noOrders": "주문이 없습니다.",
+    "loading": "불러오는 중..."
+  },
+  "strings": {
+    "durable": "내구성 스트링",
+    "repulsion": "반발력 스트링",
+    "attack": "공격 (파워 중심)",
+    "control": "컨트롤 (정밀 중심)"
+  },
+  "status": {
+    "pending": "대기",
+    "in_progress": "진행 중",
+    "completed": "완료"
+  },
+  "filters": {
+    "all": "전체"
+  }
+}
