@@ -5,8 +5,9 @@ import { useUser } from "@clerk/clerk-react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { fetchOrders, updateOrderStatus } from "@/lib/api";
+import { fetchOrders, updateOrderStatus, registerMerchant } from "@/lib/api";
 import type { Order, OrderStatus } from "@/types";
+import { SuperAdminDashboard } from "./SuperAdminDashboard";
 
 const STATUS_FILTERS: Array<{ value?: OrderStatus; labelKey: string }> = [
   { value: undefined, labelKey: "filters.all" },
@@ -19,19 +20,47 @@ export const AdminDashboard = () => {
   const { t } = useTranslation();
   const { user } = useUser();
   const adminUserId = user?.id;
+
+  // Super Admin Check
   const configuredAdminId = import.meta.env.VITE_ADMIN_USER_ID;
-  const isAdmin =
+  const isSuperAdmin =
     adminUserId && configuredAdminId && adminUserId === configuredAdminId;
+
+  // Merchant State
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [businessName, setBusinessName] = useState("");
+
   const [statusFilter, setStatusFilter] = useState<OrderStatus | undefined>(
     "pending",
   );
   const queryClient = useQueryClient();
 
-  const { data: orders = [], isLoading } = useQuery({
+  const {
+    data: orders = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["orders", statusFilter],
     queryFn: () => fetchOrders(statusFilter),
-    enabled: Boolean(isAdmin),
+    enabled: !!adminUserId && !isSuperAdmin,
+    retry: false,
   });
+
+  const isMerchant = !isSuperAdmin && !error;
+  const merchantNotApproved = error?.message?.includes(
+    "Merchant account not approved",
+  ); // This is loose, ideally check specific error code
+
+  const handleRegister = async () => {
+    if (!adminUserId || !businessName) return;
+    try {
+      await registerMerchant(adminUserId, businessName);
+      alert("Registration submitted! Please wait for approval.");
+      setIsRegistering(false);
+    } catch (e) {
+      alert("Registration failed.");
+    }
+  };
 
   const counts = useMemo(() => {
     const summary: Record<OrderStatus, number> = {
@@ -51,7 +80,44 @@ export const AdminDashboard = () => {
     await queryClient.invalidateQueries({ queryKey: ["orders"] });
   };
 
-  if (!isAdmin) {
+  if (isSuperAdmin) {
+    return <SuperAdminDashboard />;
+  }
+
+  if (merchantNotApproved) {
+    return (
+      <Card className="admin-locked">
+        <h2>Account Pending</h2>
+        <p className="muted">
+          Your merchant account is pending approval by the platform
+          administrator.
+        </p>
+      </Card>
+    );
+  }
+
+  // If fetching orders fails with 403 (unauthorized/not a merchant), show registration
+  if (error) {
+    return (
+      <Card className="admin-locked">
+        <h2>Merchant Registration</h2>
+        <p className="muted">
+          You act as a merchant? Register your business below.
+        </p>
+        <div className="mt-4 flex gap-2">
+          <input
+            className="border p-2 rounded"
+            placeholder="Business Name"
+            value={businessName}
+            onChange={(e) => setBusinessName(e.target.value)}
+          />
+          <Button onClick={handleRegister}>Register</Button>
+        </div>
+      </Card>
+    );
+  }
+
+  if (!adminUserId) {
     return (
       <Card className="admin-locked">
         <h2>{t("adminTitle")}</h2>

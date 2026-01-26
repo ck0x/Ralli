@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import sql, { ensureTables } from "./_db";
+import { requireAdmin } from "./_auth";
 
 const send = (res: ServerResponse, status: number, payload: unknown) => {
   res.statusCode = status;
@@ -16,6 +17,15 @@ export default async function handler(
     return;
   }
 
+  // Require merchant auth to search for customers
+  const auth = await requireAdmin(req, res);
+  if (!auth) return;
+
+  if (auth.role !== "merchant") {
+    send(res, 403, { error: "Access denied" });
+    return;
+  }
+
   const phone = (req.query?.phone ?? "").trim();
   if (!phone) {
     send(res, 400, { error: "Phone is required" });
@@ -25,15 +35,16 @@ export default async function handler(
   try {
     await ensureTables();
     const rows = await sql`
-      SELECT id, name, phone, email, preferred_language
+      SELECT id, name, phone, email, preferred_language, merchant_id
       FROM customers
-      WHERE phone = ${phone}
+      WHERE phone = ${phone} AND merchant_id = ${auth.merchant.id}
       LIMIT 1
     `;
 
     const customer = rows.length
       ? {
           id: rows[0].id as string,
+          merchantId: rows[0].merchant_id as string,
           name: rows[0].name as string,
           phone: rows[0].phone as string,
           email: rows[0].email as string | null,
@@ -43,6 +54,7 @@ export default async function handler(
 
     send(res, 200, { customer });
   } catch (error) {
+    console.error(error);
     send(res, 500, { error: "Failed to fetch customer" });
   }
 }

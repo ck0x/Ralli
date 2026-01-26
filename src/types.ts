@@ -1,7 +1,10 @@
+import { MerchantStatus } from "./types/merchant";
+
 export type OrderStatus = "pending" | "in_progress" | "completed";
 
 export type Customer = {
   id: string;
+  merchantId: string;
   name: string;
   phone: string;
   email?: string | null;
@@ -10,6 +13,7 @@ export type Customer = {
 
 export type Order = {
   id: string;
+  merchantId: string;
   customerId: string;
   customerName: string;
   customerPhone: string;

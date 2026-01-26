@@ -92,7 +92,7 @@ export const CustomerKiosk = () => {
     setLookupStatus("loading");
 
     try {
-      const customer = await fetchCustomerByPhone(phone);
+      const customer = await fetchCustomerByPhone(phone, adminUserId);
       if (customer) {
         setValue("name", customer.name);
         setValue("email", customer.email ?? "");

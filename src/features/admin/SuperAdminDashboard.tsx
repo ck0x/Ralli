@@ -1,0 +1,87 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUser } from "@clerk/clerk-react";
+import { fetchMerchants, updateMerchantStatus } from "@/lib/api";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import type { Merchant } from "@/types/merchant";
+
+export const SuperAdminDashboard = () => {
+  const { user } = useUser();
+  const queryClient = useQueryClient();
+  const adminUserId = user?.id;
+
+  const { data: merchants = [], isLoading } = useQuery({
+    queryKey: ["merchants"],
+    queryFn: () => fetchMerchants(adminUserId!),
+    enabled: !!adminUserId,
+  });
+
+  const handleStatusChange = async (
+    merchantId: string,
+    status: "approved" | "rejected",
+  ) => {
+    if (!adminUserId) return;
+    try {
+      await updateMerchantStatus(merchantId, status, adminUserId);
+      queryClient.invalidateQueries({ queryKey: ["merchants"] });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update status");
+    }
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <div className="admin p-4">
+      <h1 className="text-2xl font-bold mb-4">Super Admin Dashboard</h1>
+
+      <div className="grid gap-4">
+        {merchants.map((merchant: Merchant) => (
+          <Card
+            key={merchant.id}
+            className="p-4 flex justify-between items-center"
+          >
+            <div>
+              <h3 className="font-bold">{merchant.businessName}</h3>
+              <p className="text-sm text-gray-500">
+                Status:{" "}
+                <span className={`status-${merchant.status}`}>
+                  {merchant.status}
+                </span>
+              </p>
+              <p className="text-xs text-gray-400">
+                Created: {new Date(merchant.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              {merchant.status === "pending" && (
+                <>
+                  <Button
+                    onClick={() => handleStatusChange(merchant.id, "approved")}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => handleStatusChange(merchant.id, "rejected")}
+                  >
+                    Reject
+                  </Button>
+                </>
+              )}
+              {merchant.status === "approved" && (
+                <Button
+                  variant="secondary"
+                  onClick={() => handleStatusChange(merchant.id, "rejected")}
+                >
+                  Revoke
+                </Button>
+              )}
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
