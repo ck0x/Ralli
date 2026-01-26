@@ -12,17 +12,20 @@ import { createOrder, fetchCustomerByPhone } from "@/lib/api";
 import type { OrderFormValues } from "@/types";
 
 const schema = z.object({
-  phone: z.string().min(7),
-  name: z.string().min(1),
-  email: z.string().email().optional().or(z.literal("")),
-  preferredLanguage: z.string().min(1),
-  racketBrand: z.string().min(1),
+  phone: z.string().min(7, "Phone number is required (min 7 digits)"),
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address").optional().or(z.literal("")),
+  preferredLanguage: z.string(),
+  racketBrand: z.string().min(1, "Racket brand is required"),
   racketModel: z.string().optional().or(z.literal("")),
   stringCategory: z.enum(["durable", "repulsion"]),
   stringFocus: z.enum(["attack", "control"]),
-  stringBrand: z.string().min(1),
-  stringModel: z.string().min(1),
-  tension: z.coerce.number().min(15).max(35),
+  stringBrand: z.string().min(1, "String brand is required"),
+  stringModel: z.string().min(1, "String model is required"),
+  tension: z.coerce
+    .number()
+    .min(15, "Tension must be at least 15")
+    .max(35, "Tension must be at most 35"),
   notes: z.string().optional().or(z.literal("")),
 });
 
@@ -53,6 +56,7 @@ export const CustomerKiosk = () => {
   const isAdmin =
     adminUserId && configuredAdminId && adminUserId === configuredAdminId;
   const [step, setStep] = useState(0);
+  const [showStringHelper, setShowStringHelper] = useState(false);
   const [lookupStatus, setLookupStatus] = useState<StepStatus>("idle");
   const [submissionStatus, setSubmissionStatus] = useState<
     "idle" | "success" | "error"
@@ -64,6 +68,7 @@ export const CustomerKiosk = () => {
     handleSubmit,
     watch,
     reset,
+    trigger,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues,
@@ -127,6 +132,34 @@ export const CustomerKiosk = () => {
     t("steps.review"),
   ];
 
+  const handleNext = async () => {
+    let fieldsToValidate: (keyof FormValues)[] = [];
+    switch (step) {
+      case 0:
+        fieldsToValidate = ["phone"];
+        break;
+      case 1:
+        fieldsToValidate = ["name", "email", "preferredLanguage"];
+        break;
+      case 2:
+        fieldsToValidate = ["racketBrand", "racketModel", "notes"];
+        break;
+      case 3:
+        fieldsToValidate = [
+          "stringCategory",
+          "stringFocus",
+          "stringBrand",
+          "stringModel",
+          "tension",
+        ];
+        break;
+    }
+
+    const isValid = await trigger(fieldsToValidate);
+    if (isValid) {
+      setStep((prev) => prev + 1);
+    }
+  };
   const canGoBack = step > 0;
   const canGoNext = step < stepLabels.length - 1;
 
