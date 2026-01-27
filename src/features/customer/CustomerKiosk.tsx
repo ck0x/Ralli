@@ -400,7 +400,7 @@ export const CustomerKiosk = () => {
               </Button>
             )}
             {canGoNext && (
-              <Button type="button" onClick={() => setStep((prev) => prev + 1)}>
+              <Button type="button" onClick={handleNext}>
                 {t("actions.next")}
               </Button>
             )}

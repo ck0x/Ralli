@@ -32,6 +32,13 @@ export const AppLayout = ({ children, showAdminActions }: AppLayoutProps) => {
           {showAdminActions && clerkEnabled ? (
             <div className="auth-actions">
               <SignedIn>
+                <a
+                  href="/admin"
+                  className="btn secondary small"
+                  style={{ marginRight: "1rem" }}
+                >
+                  {t("adminTitle")}
+                </a>
                 <UserButton afterSignOutUrl="/" />
               </SignedIn>
               <SignedOut>

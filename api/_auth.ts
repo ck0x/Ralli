@@ -1,7 +1,10 @@
 import sql from "./_db.js";
 
 export const isSuperAdmin = (userId: string) => {
-  return userId === process.env.VITE_ADMIN_USER_ID;
+  return (
+    userId === process.env.VITE_ADMIN_USER_ID ||
+    userId === process.env.ADMIN_USER_ID
+  );
 };
 
 export const getMerchantByUserId = async (clerkUserId: string) => {

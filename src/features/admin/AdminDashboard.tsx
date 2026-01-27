@@ -106,12 +106,62 @@ export const AdminDashboard = () => {
         </p>
         <div className="mt-4 flex gap-2">
           <input
-            className="border p-2 rounded"
+            className="border p-2 rounded text-black"
             placeholder="Business Name"
             value={businessName}
             onChange={(e) => setBusinessName(e.target.value)}
           />
           <Button onClick={handleRegister}>Register</Button>
+        </div>
+
+        <div
+          style={{
+            marginTop: "2rem",
+            padding: "1rem",
+            background: "#1a1a1a",
+            borderRadius: "8px",
+            border: "1px solid #333",
+          }}
+        >
+          <h3
+            style={{
+              fontSize: "0.8rem",
+              color: "#888",
+              marginBottom: "0.5rem",
+            }}
+          >
+            DEBUG INFO (Check this)
+          </h3>
+          <p
+            style={{ fontFamily: "monospace", fontSize: "0.75rem", margin: 0 }}
+          >
+            Your ID:{" "}
+            <span style={{ color: "#fff" }}>{adminUserId || "NONE"}</span>
+          </p>
+          <p
+            style={{ fontFamily: "monospace", fontSize: "0.75rem", margin: 0 }}
+          >
+            Env Target ID:{" "}
+            <span style={{ color: "#fff" }}>
+              {configuredAdminId || "NOT SET"}
+            </span>
+          </p>
+          <p
+            style={{
+              fontFamily: "monospace",
+              fontSize: "0.75rem",
+              margin: "0.5rem 0 0",
+              color: isSuperAdmin ? "#4CAF50" : "#FF5252",
+            }}
+          >
+            Match: {isSuperAdmin ? "YES" : "NO"}
+          </p>
+          {!isSuperAdmin && (
+            <p style={{ fontSize: "0.7rem", color: "#666", marginTop: "1rem" }}>
+              * If you want to be Super Admin, copy "Your ID" and put it into
+              .env as VITE_ADMIN_USER_ID
+            </p>
+          )}
         </div>
       </Card>
     );
