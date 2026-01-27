@@ -8,6 +8,7 @@ import {
   SignedOut,
 } from "@clerk/clerk-react";
 import { useIsSuperAdmin } from "@/hooks/useIsSuperAdmin";
+import { isWebView } from "@/lib/utils";
 
 type AppLayoutProps = {
   children: ReactNode;
@@ -27,6 +28,14 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
 
   return (
     <div className="app-shell">
+      <SignedOut>
+        {isWebView() && (
+          <div className="bg-amber-50 border-b border-amber-200 px-6 py-2 text-xs text-amber-800 text-center">
+            ⚠️ For a secure login, please use your system's main browser (Safari
+            or Chrome).
+          </div>
+        )}
+      </SignedOut>
       <header className="app-header">
         <Link
           to="/"

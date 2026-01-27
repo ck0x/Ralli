@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { SignInButton, useUser, SignedIn, SignedOut } from "@clerk/clerk-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/Button";
+import { isWebView } from "@/lib/utils";
 
 export const LandingPage = () => {
   const { t } = useTranslation();
@@ -12,8 +13,21 @@ export const LandingPage = () => {
     navigate("/kiosk");
   };
 
+  const showWebViewWarning = !isSignedIn && isWebView();
+
   return (
     <div className="min-h-screen bg-neutral-50 text-neutral-900 flex flex-col font-sans">
+      {showWebViewWarning && (
+        <div className="bg-amber-50 border-b border-amber-200 px-6 py-3 text-sm text-amber-800 flex items-center justify-center gap-2">
+          <span role="img" aria-label="warning">
+            ⚠️
+          </span>
+          <p>
+            For a secure login experience, please open Ralli in your system's
+            main browser (Safari or Chrome).
+          </p>
+        </div>
+      )}
       {/* Landing Header */}
       <header className="px-6 py-4 flex items-center justify-between border-b bg-white border-neutral-200">
         <div className="flex items-center gap-3">
