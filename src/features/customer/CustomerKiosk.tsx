@@ -7,6 +7,7 @@ import { useUser } from "@clerk/clerk-react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Spinner } from "@/components/ui/Loading";
 import { stringCatalog } from "@/lib/strings";
 import { createOrder, fetchCustomerByPhone } from "@/lib/api";
 import { useIsSuperAdmin } from "@/hooks/useIsSuperAdmin";
@@ -58,7 +59,7 @@ export const CustomerKiosk = () => {
   const [showStringHelper, setShowStringHelper] = useState(false);
   const [lookupStatus, setLookupStatus] = useState<StepStatus>("idle");
   const [submissionStatus, setSubmissionStatus] = useState<
-    "idle" | "success" | "error"
+    "idle" | "success" | "error" | "loading"
   >("idle");
 
   const {
@@ -109,7 +110,7 @@ export const CustomerKiosk = () => {
   };
 
   const onSubmit = handleSubmit(async (values) => {
-    setSubmissionStatus("idle");
+    setSubmissionStatus("loading");
     try {
       await createOrder(values as OrderFormValues, adminUserId);
       setSubmissionStatus("success");
@@ -189,7 +190,11 @@ export const CustomerKiosk = () => {
                 </label>
               </div>
               <div className="row">
-                <Button type="button" onClick={handleLookup}>
+                <Button
+                  type="button"
+                  onClick={handleLookup}
+                  isLoading={lookupStatus === "loading"}
+                >
                   {t("actions.lookup")}
                 </Button>
                 {lookupStatus === "found" && (
@@ -403,7 +408,11 @@ export const CustomerKiosk = () => {
               </Button>
             )}
             {step === 4 && (
-              <Button type="submit" disabled={!adminUserId}>
+              <Button
+                type="submit"
+                disabled={!adminUserId}
+                isLoading={submissionStatus === "loading"}
+              >
                 {t("actions.submit")}
               </Button>
             )}

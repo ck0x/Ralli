@@ -5,6 +5,7 @@ import { useUser } from "@clerk/clerk-react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Skeleton } from "@/components/ui/Loading";
 import { fetchOrders, updateOrderStatus } from "@/lib/api";
 import type { Order, OrderStatus } from "@/types";
 import { useIsSuperAdmin } from "@/hooks/useIsSuperAdmin";
@@ -54,9 +55,21 @@ export const AdminDashboard = () => {
 
   if (isOrdersLoading) {
     return (
-      <Card className="p-8 text-center">
-        <p>Loading...</p>
-      </Card>
+      <div className="admin space-y-6">
+        <Card className="p-6">
+          <Skeleton className="h-8 w-48 mb-6" />
+          <div className="grid grid-cols-3 gap-4">
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+          </div>
+        </Card>
+        <div className="space-y-4">
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      </div>
     );
   }
 

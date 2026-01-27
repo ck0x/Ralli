@@ -164,13 +164,13 @@ export const Onboarding = () => {
             onClick={handleRegister}
             disabled={
               !businessName ||
-              isSubmitting ||
               (!!businessEmail && !!emailError) ||
               (!!businessPhone && !!phoneError)
             }
+            isLoading={isSubmitting}
             className="w-full"
           >
-            {isSubmitting ? "Registering..." : "Register Shop"}
+            Register Shop
           </Button>
         </div>
       </Card>

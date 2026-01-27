@@ -1,15 +1,39 @@
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/clerk-react";
 import { fetchMerchants, updateMerchantStatus } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Modal } from "@/components/ui/Modal";
+import { CardSkeleton } from "@/components/ui/Loading";
 import { formatPhoneForDisplay } from "@/lib/phone";
+import { CheckCircle, AlertCircle } from "lucide-react";
 import type { Merchant } from "@/types/merchant";
 
 export const SuperAdminDashboard = () => {
   const { user } = useUser();
   const queryClient = useQueryClient();
   const adminUserId = user?.id;
+
+  // Modal State
+  const [pendingAction, setPendingAction] = useState<{
+    id: string;
+    status: "approved" | "rejected" | "pending";
+    name: string;
+  } | null>(null);
+
+  // Toast State
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   const {
     data: merchants = [],
@@ -21,46 +45,44 @@ export const SuperAdminDashboard = () => {
     enabled: !!adminUserId,
   });
 
-  const handleStatusChange = async (
-    merchantId: string,
-    status: "approved" | "rejected" | "pending",
-  ) => {
-    if (!adminUserId) return;
+  const handleStatusChange = async () => {
+    if (!adminUserId || !pendingAction) return;
+    const { id, status, name } = pendingAction;
+    setPendingAction(null);
+
     try {
-      await updateMerchantStatus(merchantId, status, adminUserId);
+      await updateMerchantStatus(id, status, adminUserId);
       queryClient.invalidateQueries({ queryKey: ["merchants"] });
+      setToast({
+        message: `Successfully ${status === "approved" ? "approved" : status === "rejected" ? "rejected" : "reverted"} ${name}`,
+        type: "success",
+      });
     } catch (err: any) {
       console.error(err);
-      alert(err.message || "Failed to update status");
+      setToast({
+        message: err.message || "Failed to update status",
+        type: "error",
+      });
     }
   };
 
-  // Confirmation wrapper to prevent accidental clicks
-  const confirmAndChange = async (
-    merchantId: string,
+  const openConfirmation = (
+    id: string,
     status: "approved" | "rejected" | "pending",
     name?: string,
   ) => {
-    const actionLabel =
-      status === "approved"
-        ? "approve"
-        : status === "rejected"
-          ? "reject"
-          : "revert to pending";
-    const confirmation = window.confirm(
-      `Are you sure you want to ${actionLabel} ${name ? `\"${name}\"` : "this merchant"}?`,
-    );
-    if (!confirmation) return;
-    await handleStatusChange(merchantId, status);
+    setPendingAction({ id, status, name: name || "this merchant" });
   };
 
   if (isLoading) {
     return (
       <div className="admin p-4">
         <h1 className="text-2xl font-bold mb-4">Super Admin Dashboard</h1>
-        <Card className="p-8 text-center text-gray-500">
-          Loading merchants...
-        </Card>
+        <div className="grid gap-4">
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+        </div>
       </div>
     );
   }
@@ -135,7 +157,7 @@ export const SuperAdminDashboard = () => {
                   <>
                     <Button
                       onClick={() =>
-                        confirmAndChange(
+                        openConfirmation(
                           merchant.id,
                           "approved",
                           merchant.businessName,
@@ -147,7 +169,7 @@ export const SuperAdminDashboard = () => {
                     <Button
                       variant="secondary"
                       onClick={() =>
-                        confirmAndChange(
+                        openConfirmation(
                           merchant.id,
                           "rejected",
                           merchant.businessName,
@@ -163,7 +185,7 @@ export const SuperAdminDashboard = () => {
                   <>
                     <Button
                       onClick={() =>
-                        confirmAndChange(
+                        openConfirmation(
                           merchant.id,
                           "approved",
                           merchant.businessName,
@@ -175,7 +197,7 @@ export const SuperAdminDashboard = () => {
                     <Button
                       variant="secondary"
                       onClick={() =>
-                        confirmAndChange(
+                        openConfirmation(
                           merchant.id,
                           "pending",
                           merchant.businessName,
@@ -191,7 +213,7 @@ export const SuperAdminDashboard = () => {
                   <Button
                     variant="secondary"
                     onClick={() =>
-                      confirmAndChange(
+                      openConfirmation(
                         merchant.id,
                         "rejected",
                         merchant.businessName,
@@ -204,6 +226,71 @@ export const SuperAdminDashboard = () => {
               </div>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      <Modal
+        isOpen={!!pendingAction}
+        onClose={() => setPendingAction(null)}
+        title="Confirm Action"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setPendingAction(null)}>
+              Cancel
+            </Button>
+            <Button
+              className={
+                pendingAction?.status === "rejected"
+                  ? "bg-red-600 hover:bg-red-700"
+                  : ""
+              }
+              onClick={handleStatusChange}
+            >
+              Confirm{" "}
+              {pendingAction?.status === "approved"
+                ? "Approval"
+                : pendingAction?.status === "rejected"
+                  ? "Rejection"
+                  : "Revert"}
+            </Button>
+          </>
+        }
+      >
+        <p>
+          Are you sure you want to{" "}
+          <span className="font-bold">
+            {pendingAction?.status === "approved"
+              ? "approve"
+              : pendingAction?.status === "rejected"
+                ? "reject"
+                : "revert"}
+          </span>{" "}
+          <span className="text-indigo-600 font-semibold">
+            {pendingAction?.name}
+          </span>
+          ?
+        </p>
+        <p className="mt-2 text-sm text-gray-500">
+          This will update the merchant's access to the platform immediately.
+        </p>
+      </Modal>
+
+      {/* Persistence Toast */}
+      {toast && (
+        <div
+          className={`fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border animate-in slide-in-from-right-full ${
+            toast.type === "success"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-red-50 border-red-200 text-red-800"
+          }`}
+        >
+          {toast.type === "success" ? (
+            <CheckCircle className="w-5 h-5" />
+          ) : (
+            <AlertCircle className="w-5 h-5" />
+          )}
+          <span className="font-medium">{toast.message}</span>
         </div>
       )}
     </div>
