@@ -10,7 +10,11 @@ export const SuperAdminDashboard = () => {
   const queryClient = useQueryClient();
   const adminUserId = user?.id;
 
-  const { data: merchants = [], isLoading } = useQuery({
+  const {
+    data: merchants = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["merchants"],
     queryFn: () => fetchMerchants(adminUserId!),
     enabled: !!adminUserId,
@@ -30,58 +34,91 @@ export const SuperAdminDashboard = () => {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="admin p-4">
+        <h1 className="text-2xl font-bold mb-4">Super Admin Dashboard</h1>
+        <Card className="p-8 text-center text-gray-500">
+          Loading merchants...
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="admin p-4">
+        <h1 className="text-2xl font-bold mb-4">Super Admin Dashboard</h1>
+        <Card className="p-8 text-center border-red-500 text-red-500">
+          <p>Failed to load merchants.</p>
+          <p className="text-sm mt-2">
+            {error instanceof Error ? error.message : "Unknown error"}
+          </p>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="admin p-4">
       <h1 className="text-2xl font-bold mb-4">Super Admin Dashboard</h1>
 
-      <div className="grid gap-4">
-        {merchants.map((merchant: Merchant) => (
-          <Card
-            key={merchant.id}
-            className="p-4 flex justify-between items-center"
-          >
-            <div>
-              <h3 className="font-bold">{merchant.businessName}</h3>
-              <p className="text-sm text-gray-500">
-                Status:{" "}
-                <span className={`status-${merchant.status}`}>
-                  {merchant.status}
-                </span>
-              </p>
-              <p className="text-xs text-gray-400">
-                Created: {new Date(merchant.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-            <div className="flex gap-2">
-              {merchant.status === "pending" && (
-                <>
-                  <Button
-                    onClick={() => handleStatusChange(merchant.id, "approved")}
-                  >
-                    Approve
-                  </Button>
+      {merchants.length === 0 ? (
+        <Card className="p-8 text-center text-gray-500">
+          <p>No merchants registered yet.</p>
+        </Card>
+      ) : (
+        <div className="grid gap-4">
+          {merchants.map((merchant: Merchant) => (
+            <Card
+              key={merchant.id}
+              className="p-4 flex justify-between items-center"
+            >
+              <div>
+                <h3 className="font-bold">{merchant.businessName}</h3>
+                <p className="text-sm text-gray-500">
+                  Status:{" "}
+                  <span className={`status-${merchant.status}`}>
+                    {merchant.status}
+                  </span>
+                </p>
+                <div className="text-xs text-gray-400 mt-1">
+                  <p>ID: {merchant.id}</p> <p>User: {merchant.clerkUserId}</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                {merchant.status === "pending" && (
+                  <>
+                    <Button
+                      onClick={() =>
+                        handleStatusChange(merchant.id, "approved")
+                      }
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() =>
+                        handleStatusChange(merchant.id, "rejected")
+                      }
+                    >
+                      Reject
+                    </Button>
+                  </>
+                )}
+                {merchant.status === "approved" && (
                   <Button
                     variant="secondary"
                     onClick={() => handleStatusChange(merchant.id, "rejected")}
                   >
-                    Reject
+                    Revoke
                   </Button>
-                </>
-              )}
-              {merchant.status === "approved" && (
-                <Button
-                  variant="secondary"
-                  onClick={() => handleStatusChange(merchant.id, "rejected")}
-                >
-                  Revoke
-                </Button>
-              )}
-            </div>
-          </Card>
-        ))}
-      </div>
+                )}
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

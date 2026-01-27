@@ -7,6 +7,7 @@ import {
   SignedIn,
   SignedOut,
 } from "@clerk/clerk-react";
+import { useIsSuperAdmin } from "@/hooks/useIsSuperAdmin";
 
 type AppLayoutProps = {
   children: ReactNode;
@@ -15,6 +16,7 @@ type AppLayoutProps = {
 
 export const AppLayout = ({ children, showAdminActions }: AppLayoutProps) => {
   const { t } = useTranslation();
+  const { isSuperAdmin } = useIsSuperAdmin();
   const clerkEnabled = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 
   return (
@@ -32,13 +34,23 @@ export const AppLayout = ({ children, showAdminActions }: AppLayoutProps) => {
           {showAdminActions && clerkEnabled ? (
             <div className="auth-actions">
               <SignedIn>
-                <a
-                  href="/admin"
-                  className="btn secondary small"
-                  style={{ marginRight: "1rem" }}
-                >
-                  {t("adminTitle")}
-                </a>
+                {isSuperAdmin ? (
+                  <a
+                    href="/admin"
+                    className="btn secondary small"
+                    style={{ marginRight: "1rem" }}
+                  >
+                    {t("adminTitle")}
+                  </a>
+                ) : (
+                  <a
+                    href="/admin"
+                    className="btn secondary small"
+                    style={{ marginRight: "1rem" }}
+                  >
+                    {"Orders"}
+                  </a>
+                )}
                 <UserButton afterSignOutUrl="/" />
               </SignedIn>
               <SignedOut>
