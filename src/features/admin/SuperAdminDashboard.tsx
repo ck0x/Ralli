@@ -3,6 +3,7 @@ import { useUser } from "@clerk/clerk-react";
 import { fetchMerchants, updateMerchantStatus } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { formatPhoneForDisplay } from "@/lib/phone";
 import type { Merchant } from "@/types/merchant";
 
 export const SuperAdminDashboard = () => {
@@ -90,6 +91,18 @@ export const SuperAdminDashboard = () => {
                     {merchant.createdAt
                       ? new Date(merchant.createdAt).toLocaleString()
                       : "—"}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-500">
+                  Email:{" "}
+                  <span className="text-xs text-gray-400">
+                    {merchant.businessEmail ? merchant.businessEmail : "—"}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-500">
+                  Phone:{" "}
+                  <span className="text-xs text-gray-400">
+                    {merchant.businessPhone ? formatPhoneForDisplay(merchant.businessPhone) : "—"}
                   </span>
                 </p>
                 <div className="text-xs text-gray-400 mt-1">
