@@ -16,8 +16,8 @@ export const LandingPage = () => {
     <div className="min-h-screen bg-neutral-50 text-neutral-900 flex flex-col font-sans">
       {/* Landing Header */}
       <header className="px-6 py-4 flex items-center justify-between border-b bg-white border-neutral-200">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🏸</span>
+        <div className="flex items-center gap-3">
+          <img src="/Ralli_Logo.png" alt="Ralli" className="w-8 h-8" />
           <span className="text-xl font-bold tracking-tight text-neutral-900">
             {t("appName")}
           </span>
@@ -47,6 +47,11 @@ export const LandingPage = () => {
 
       {/* Hero Section */}
       <main className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white space-y-8">
+        <img
+          src="/Ralli_Logo.png"
+          alt="Ralli logo"
+          className="w-24 h-24 mx-auto"
+        />
         <div className="space-y-4 max-w-3xl">
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-neutral-900">
             Stringing management <br />
