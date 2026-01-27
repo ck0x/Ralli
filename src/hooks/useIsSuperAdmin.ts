@@ -1,15 +1,22 @@
 import { useUser } from "@clerk/clerk-react";
+import { useQuery } from "@tanstack/react-query";
+import { checkAdminRole } from "@/lib/api";
 
 export const useIsSuperAdmin = () => {
   const { user, isLoaded } = useUser();
-  const configuredAdminId = import.meta.env.VITE_ADMIN_USER_ID;
 
-  // Ensure robust check suppressing whitespace
-  const isSuperAdmin =
-    isLoaded &&
-    !!user?.id &&
-    !!configuredAdminId &&
-    user.id.trim() === configuredAdminId.trim();
+  const { data, isLoading } = useQuery({
+    queryKey: ["adminRole", user?.id],
+    queryFn: () => checkAdminRole(user?.id),
+    enabled: isLoaded && !!user?.id,
+  });
 
-  return { isSuperAdmin, isLoaded };
+  const role = data?.role ?? (isLoading ? "loading" : "anonymous");
+
+  return {
+    isSuperAdmin: role === "super_admin",
+    isLoaded: isLoaded && !isLoading,
+    role,
+    merchant: data?.merchant,
+  };
 };

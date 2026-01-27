@@ -15,7 +15,10 @@ export const registerMerchant = async (
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ clerkUserId, businessName }),
   });
-  if (!response.ok) throw new Error("Registration failed");
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Registration failed");
+  }
   return response.json();
 };
 
@@ -23,7 +26,10 @@ export const fetchMerchants = async (adminUserId: string) => {
   const response = await fetch(`${API_BASE}/api/merchants`, {
     headers: { "x-admin-user-id": adminUserId },
   });
-  if (!response.ok) throw new Error("Failed to fetch merchants");
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to fetch merchants");
+  }
   const data = await response.json();
   return data.merchants;
 };
@@ -41,7 +47,23 @@ export const updateMerchantStatus = async (
     },
     body: JSON.stringify({ merchantId, status }),
   });
-  if (!response.ok) throw new Error("Failed to update merchant");
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to update merchant");
+  }
+  return response.json();
+};
+
+export const checkAdminRole = async (adminUserId?: string) => {
+  const response = await fetch(`${API_BASE}/api/check-admin`, {
+    headers: {
+      ...(adminUserId ? { "x-admin-user-id": adminUserId } : {}),
+    },
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to check admin");
+  }
   return response.json();
 };
 
@@ -58,7 +80,8 @@ export const fetchCustomerByPhone = async (
     },
   );
   if (!response.ok) {
-    throw new Error("Failed to fetch customer");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to fetch customer");
   }
   const data = (await response.json()) as { customer: Customer | null };
   return data.customer;
@@ -78,17 +101,26 @@ export const createOrder = async (
   });
 
   if (!response.ok) {
-    throw new Error("Failed to create order");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to create order");
   }
 
   return (await response.json()) as { orderId: string };
 };
 
-export const fetchOrders = async (status?: OrderStatus): Promise<Order[]> => {
+export const fetchOrders = async (
+  status?: OrderStatus,
+  adminUserId?: string,
+): Promise<Order[]> => {
   const query = status ? `?status=${status}` : "";
-  const response = await fetch(`${API_BASE}/api/orders${query}`);
+  const response = await fetch(`${API_BASE}/api/orders${query}`, {
+    headers: {
+      ...(adminUserId ? { "x-admin-user-id": adminUserId } : {}),
+    },
+  });
   if (!response.ok) {
-    throw new Error("Failed to fetch orders");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to fetch orders");
   }
   const data = (await response.json()) as OrdersResponse;
   return data.orders;
@@ -109,7 +141,8 @@ export const updateOrderStatus = async (
   });
 
   if (!response.ok) {
-    throw new Error("Failed to update order");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to update order");
   }
 
   return (await response.json()) as { success: true };

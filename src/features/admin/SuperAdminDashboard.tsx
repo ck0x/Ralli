@@ -28,9 +28,9 @@ export const SuperAdminDashboard = () => {
     try {
       await updateMerchantStatus(merchantId, status, adminUserId);
       queryClient.invalidateQueries({ queryKey: ["merchants"] });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to update status");
+      alert(err.message || "Failed to update status");
     }
   };
 

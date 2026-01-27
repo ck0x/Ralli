@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { stringCatalog } from "@/lib/strings";
 import { createOrder, fetchCustomerByPhone } from "@/lib/api";
+import { useIsSuperAdmin } from "@/hooks/useIsSuperAdmin";
 import type { OrderFormValues } from "@/types";
 
 const schema = z.object({
@@ -52,9 +53,7 @@ export const CustomerKiosk = () => {
   const { t, i18n } = useTranslation();
   const { user } = useUser();
   const adminUserId = user?.id;
-  const configuredAdminId = import.meta.env.VITE_ADMIN_USER_ID;
-  const isAdmin =
-    adminUserId && configuredAdminId && adminUserId === configuredAdminId;
+  const { isSuperAdmin: isAdmin } = useIsSuperAdmin();
   const [step, setStep] = useState(0);
   const [showStringHelper, setShowStringHelper] = useState(false);
   const [lookupStatus, setLookupStatus] = useState<StepStatus>("idle");
@@ -112,10 +111,7 @@ export const CustomerKiosk = () => {
   const onSubmit = handleSubmit(async (values) => {
     setSubmissionStatus("idle");
     try {
-      await createOrder(
-        values as OrderFormValues,
-        isAdmin ? adminUserId : undefined,
-      );
+      await createOrder(values as OrderFormValues, adminUserId);
       setSubmissionStatus("success");
       setStep(0);
       reset(defaultValues);
@@ -383,8 +379,10 @@ export const CustomerKiosk = () => {
               {submissionStatus === "error" && (
                 <p className="error">{t("messages.submitError")}</p>
               )}
-              {!isAdmin && (
-                <p className="warning">{t("messages.adminOnlySubmit")}</p>
+              {!adminUserId && (
+                <p className="warning">
+                  You must be signed in to submit an order.
+                </p>
               )}
             </section>
           )}
@@ -405,7 +403,7 @@ export const CustomerKiosk = () => {
               </Button>
             )}
             {step === 4 && (
-              <Button type="submit" disabled={!isAdmin}>
+              <Button type="submit" disabled={!adminUserId}>
                 {t("actions.submit")}
               </Button>
             )}

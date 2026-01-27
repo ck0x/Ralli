@@ -1,10 +1,8 @@
 import sql from "./_db.js";
 
 export const isSuperAdmin = (userId: string) => {
-  return (
-    userId === process.env.VITE_ADMIN_USER_ID ||
-    userId === process.env.ADMIN_USER_ID
-  );
+  const adminId = process.env.ADMIN_USER_ID || process.env.VITE_ADMIN_USER_ID;
+  return userId === adminId;
 };
 
 export const getMerchantByUserId = async (clerkUserId: string) => {
@@ -14,11 +12,17 @@ export const getMerchantByUserId = async (clerkUserId: string) => {
   return merchant;
 };
 
+const sendError = (res: any, status: number, message: string) => {
+  res.statusCode = status;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify({ error: message }));
+};
+
 export const requireAdmin = async (req: any, res: any) => {
   const headerUserId = req.headers["x-admin-user-id"];
 
   if (!headerUserId) {
-    res.status(401).json({ error: "Unauthorized" });
+    sendError(res, 401, "Unauthorized");
     return null;
   }
 
@@ -31,12 +35,12 @@ export const requireAdmin = async (req: any, res: any) => {
   const merchant = await getMerchantByUserId(headerUserId);
   if (merchant) {
     if (merchant.status !== "approved") {
-      res.status(403).json({ error: "Merchant account not approved." });
+      sendError(res, 403, "Merchant account not approved");
       return null;
     }
     return { role: "merchant", merchant };
   }
 
-  res.status(403).json({ error: "Access denied." });
+  sendError(res, 403, "Access denied");
   return null;
 };

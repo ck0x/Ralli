@@ -5,9 +5,8 @@ import { useUser } from "@clerk/clerk-react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { fetchOrders, updateOrderStatus, registerMerchant } from "@/lib/api";
+import { fetchOrders, updateOrderStatus } from "@/lib/api";
 import type { Order, OrderStatus } from "@/types";
-import { SuperAdminDashboard } from "./SuperAdminDashboard";
 import { useIsSuperAdmin } from "@/hooks/useIsSuperAdmin";
 
 const STATUS_FILTERS: Array<{ value?: OrderStatus; labelKey: string }> = [
@@ -19,53 +18,26 @@ const STATUS_FILTERS: Array<{ value?: OrderStatus; labelKey: string }> = [
 
 export const AdminDashboard = () => {
   const { t } = useTranslation();
-  const { user, isLoaded } = useUser();
+  const { user } = useUser();
   const { isSuperAdmin } = useIsSuperAdmin();
   const adminUserId = user?.id;
-  const configuredAdminId = import.meta.env.VITE_ADMIN_USER_ID;
-
-  // Merchant State
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [businessName, setBusinessName] = useState("");
 
   const [statusFilter, setStatusFilter] = useState<OrderStatus | undefined>(
     "pending",
   );
   const queryClient = useQueryClient();
 
-  const {
-    data: orders = [],
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["orders", statusFilter],
-    queryFn: () => fetchOrders(statusFilter),
-    enabled: isLoaded && !!adminUserId && !isSuperAdmin,
+  const { data: orders = [], isLoading: isOrdersLoading } = useQuery({
+    queryKey: ["orders", statusFilter, adminUserId],
+    queryFn: () => fetchOrders(statusFilter, adminUserId),
+    enabled: !!adminUserId && !isSuperAdmin,
     retry: false,
   });
 
-  if (!isLoaded) {
-    return (
-      <Card className="p-8 text-center">
-        <p>Loading...</p>
-      </Card>
-    );
-  }
-
-  const isMerchant = !isSuperAdmin && !error;
-  const merchantNotApproved = error?.message?.includes(
-    "Merchant account not approved",
-  ); // This is loose, ideally check specific error code
-
-  const handleRegister = async () => {
-    if (!adminUserId || !businessName) return;
-    try {
-      await registerMerchant(adminUserId, businessName);
-      alert("Registration submitted! Please wait for approval.");
-      setIsRegistering(false);
-    } catch (e) {
-      alert("Registration failed.");
-    }
+  const handleStatusUpdate = async (order: Order, status: OrderStatus) => {
+    if (!adminUserId) return;
+    await updateOrderStatus(order.id, status, adminUserId);
+    await queryClient.invalidateQueries({ queryKey: ["orders"] });
   };
 
   const counts = useMemo(() => {
@@ -80,54 +52,10 @@ export const AdminDashboard = () => {
     return summary;
   }, [orders]);
 
-  const handleStatusUpdate = async (order: Order, status: OrderStatus) => {
-    if (!adminUserId) return;
-    await updateOrderStatus(order.id, status, adminUserId);
-    await queryClient.invalidateQueries({ queryKey: ["orders"] });
-  };
-
-  if (isSuperAdmin) {
-    return <SuperAdminDashboard />;
-  }
-
-  if (merchantNotApproved) {
+  if (isOrdersLoading) {
     return (
-      <Card className="admin-locked">
-        <h2>Account Pending</h2>
-        <p className="muted">
-          Your merchant account is pending approval by the platform
-          administrator.
-        </p>
-      </Card>
-    );
-  }
-
-  // If fetching orders fails with 403 (unauthorized/not a merchant), show registration
-  if (error) {
-    return (
-      <Card className="admin-locked">
-        <h2>Merchant Registration</h2>
-        <p className="muted">
-          You act as a merchant? Register your business below.
-        </p>
-        <div className="mt-4 flex gap-2">
-          <input
-            className="border p-2 rounded text-black"
-            placeholder="Business Name"
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
-          />
-          <Button onClick={handleRegister}>Register</Button>
-        </div>
-      </Card>
-    );
-  }
-
-  if (!adminUserId) {
-    return (
-      <Card className="admin-locked">
-        <h2>{t("adminTitle")}</h2>
-        <p className="muted">{t("messages.adminOnlyView")}</p>
+      <Card className="p-8 text-center">
+        <p>Loading...</p>
       </Card>
     );
   }
@@ -177,8 +105,7 @@ export const AdminDashboard = () => {
       </Card>
 
       <div className="admin-list">
-        {isLoading && <p className="muted">{t("messages.loading")}</p>}
-        {!isLoading && orders.length === 0 && (
+        {orders.length === 0 && (
           <p className="muted">{t("messages.noOrders")}</p>
         )}
         {orders.map((order) => (
