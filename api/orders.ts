@@ -4,6 +4,12 @@ import { requireAdmin } from "./_auth.js";
 import { sendCompletionEmail } from "./_email.js";
 import { send, readBody } from "./_utils.js";
 
+// Payload shape for PATCH /api/orders
+type StatusPayload = {
+  orderId: string;
+  status: "pending" | "in_progress" | "completed";
+};
+
 export default async function handler(
   req: IncomingMessage & { query?: Record<string, string> },
   res: ServerResponse,
