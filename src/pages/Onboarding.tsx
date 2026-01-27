@@ -4,7 +4,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { registerMerchant } from "@/lib/api";
-import { normalizePhone, isValidPhone, formatPhoneForDisplay } from "@/lib/phone";
+import {
+  normalizePhone,
+  isValidPhone,
+  formatPhoneForDisplay,
+} from "@/lib/phone";
 
 export const Onboarding = () => {
   const { user } = useUser();
@@ -90,7 +94,10 @@ export const Onboarding = () => {
                 setBusinessEmail(e.target.value);
               }}
               onBlur={() => {
-                if (businessEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(businessEmail)) {
+                if (
+                  businessEmail &&
+                  !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(businessEmail)
+                ) {
                   setEmailError("Invalid email format");
                 }
               }}

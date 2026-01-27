@@ -102,7 +102,9 @@ export const SuperAdminDashboard = () => {
                 <p className="text-sm text-gray-500">
                   Phone:{" "}
                   <span className="text-xs text-gray-400">
-                    {merchant.businessPhone ? formatPhoneForDisplay(merchant.businessPhone) : "—"}
+                    {merchant.businessPhone
+                      ? formatPhoneForDisplay(merchant.businessPhone)
+                      : "—"}
                   </span>
                 </p>
                 <div className="text-xs text-gray-400 mt-1">

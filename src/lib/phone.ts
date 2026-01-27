@@ -1,7 +1,10 @@
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 // Returns E.164 normalized phone or null
-export const normalizePhone = (value?: string, defaultCountry?: string): string | null => {
+export const normalizePhone = (
+  value?: string,
+  defaultCountry?: string,
+): string | null => {
   if (!value) return null;
   const parsed = parsePhoneNumberFromString(value, defaultCountry);
   if (!parsed || !parsed.isValid()) return null;
@@ -9,7 +12,10 @@ export const normalizePhone = (value?: string, defaultCountry?: string): string 
 };
 
 // Returns formatted national or international string, or the original input
-export const formatPhoneForDisplay = (value?: string, defaultCountry?: string): string => {
+export const formatPhoneForDisplay = (
+  value?: string,
+  defaultCountry?: string,
+): string => {
   if (!value) return "";
   // If it's already E.164, parse as such
   const parsed = parsePhoneNumberFromString(value, defaultCountry);
@@ -21,6 +27,9 @@ export const formatPhoneForDisplay = (value?: string, defaultCountry?: string): 
   }
 };
 
-export const isValidPhone = (value?: string, defaultCountry?: string): boolean => {
+export const isValidPhone = (
+  value?: string,
+  defaultCountry?: string,
+): boolean => {
   return normalizePhone(value, defaultCountry) !== null;
 };
