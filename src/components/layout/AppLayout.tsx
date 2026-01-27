@@ -8,7 +8,6 @@ import {
   SignedOut,
 } from "@clerk/clerk-react";
 import { useIsSuperAdmin } from "@/hooks/useIsSuperAdmin";
-import RalliLogo from "public/Ralli_Logo.png";
 
 type AppLayoutProps = {
   children: ReactNode;
@@ -34,7 +33,7 @@ export const AppLayout = ({ children, showAdminActions }: AppLayoutProps) => {
           className="brand hover:no-underline flex items-center gap-3"
         >
           <img
-            src={RalliLogo}
+            src="/Ralli_Logo.png"
             alt="Ralli Logo"
             className="brand-mark h-8 w-8"
           />
