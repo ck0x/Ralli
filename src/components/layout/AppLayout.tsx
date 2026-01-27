@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   UserButton,
   SignInButton,
@@ -42,8 +41,6 @@ export const AppLayout = ({ children, showAdminActions }: AppLayoutProps) => {
           </div>
         </Link>
         <div className="flex items-center gap-4">
-          <LanguageSwitcher />
-
           <SignedIn>
             {isLoaded &&
               isSuperAdmin &&

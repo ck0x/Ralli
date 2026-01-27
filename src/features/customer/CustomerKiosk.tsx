@@ -1,10 +1,13 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useForm, type Resolver } from "react-hook-form";
+import clsx from "clsx";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useUser } from "@clerk/clerk-react";
+import { Maximize, Minimize } from "lucide-react";
 
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Loading";
@@ -56,6 +59,26 @@ export const CustomerKiosk = () => {
   const adminUserId = user?.id;
   const { isSuperAdmin: isAdmin } = useIsSuperAdmin();
   const [step, setStep] = useState(0);
+  const kioskRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    function onFullscreenChange() {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    }
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      void kioskRef.current?.requestFullscreen();
+    } else {
+      void document.exitFullscreen();
+    }
+  };
+
   const [showStringHelper, setShowStringHelper] = useState(false);
   const [lookupStatus, setLookupStatus] = useState<StepStatus>("idle");
   const [submissionStatus, setSubmissionStatus] = useState<
@@ -161,8 +184,31 @@ export const CustomerKiosk = () => {
   const canGoNext = step < stepLabels.length - 1;
 
   return (
-    <div className="kiosk">
-      <Card className="kiosk-card">
+    <div
+      ref={kioskRef}
+      className={clsx(
+        "kiosk",
+        isFullscreen &&
+          "fixed inset-0 z-50 flex h-screen w-screen max-w-none items-center justify-center overflow-auto bg-gray-100 p-4",
+      )}
+    >
+      <Card className={clsx("kiosk-card", isFullscreen && "w-full max-w-4xl")}>
+        <div className="mb-6 flex items-center justify-between">
+          <LanguageSwitcher />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleFullscreen}
+            type="button"
+            title={isFullscreen ? "Exit Full Screen" : "Full Screen"}
+          >
+            {isFullscreen ? (
+              <Minimize className="h-4 w-4" />
+            ) : (
+              <Maximize className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
         <div className="stepper">
           {stepLabels.map((label, index) => (
             <div
