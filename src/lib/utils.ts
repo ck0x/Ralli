@@ -10,7 +10,6 @@ export function isWebView() {
   const ua = window.navigator.userAgent.toLowerCase();
 
   const isIos = /iphone|ipad|ipod/.test(ua);
-  const isAndroid = /android/.test(ua);
 
   // Common identifiers for in-app browsers/webviews
   const isMessenger = /messenger|fbav|fbios|fban/.test(ua);
