@@ -10,7 +10,7 @@ export default async function handler(req: any, res: any) {
     try {
       const body = await readBody(req);
       console.log("POST BODY:", body);
-      const { clerkUserId, businessName } = body;
+      const { clerkUserId, businessName, businessEmail, businessPhone } = body;
 
       if (!clerkUserId || !businessName) {
         console.error("Missing fields:", { clerkUserId, businessName });
@@ -19,11 +19,20 @@ export default async function handler(req: any, res: any) {
         });
       }
 
+      // Insert optional contact fields when provided
       const [newMerchant] = await sql`
-        INSERT INTO merchants (clerk_user_id, business_name, status)
-        VALUES (${clerkUserId}, ${businessName}, 'pending')
+        INSERT INTO merchants (clerk_user_id, business_name, business_email, business_phone, status)
+        VALUES (
+          ${clerkUserId},
+          ${businessName},
+          ${businessEmail ?? null},
+          ${businessPhone ?? null},
+          'pending'
+        )
         RETURNING *
       `;
+
+      console.log("New merchant created:", newMerchant.id);
       return send(res, 201, { merchant: newMerchant });
     } catch (error) {
       console.error("Registration error", error);
