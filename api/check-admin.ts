@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import sql, { ensureTables } from "./_db";
-import { isSuperAdmin, getMerchantByUserId } from "./_auth";
+import sql, { ensureTables } from "./_db.js";
+import { isSuperAdmin, getMerchantByUserId } from "./_auth.js";
 
 const send = (res: ServerResponse, status: number, payload: unknown) => {
   res.statusCode = status;

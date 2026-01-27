@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import sql, { ensureTables } from "./_db";
-import { requireAdmin } from "./_auth";
-import { sendCompletionEmail } from "./_email";
+import sql, { ensureTables } from "./_db.js";
+import { requireAdmin } from "./_auth.js";
+import { sendCompletionEmail } from "./_email.js";
 
 type OrderPayload = {
   phone: string;

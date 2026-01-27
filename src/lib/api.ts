@@ -55,16 +55,28 @@ export const updateMerchantStatus = async (
 };
 
 export const checkAdminRole = async (adminUserId?: string) => {
-  const response = await fetch(`${API_BASE}/api/check-admin`, {
-    headers: {
-      ...(adminUserId ? { "x-admin-user-id": adminUserId } : {}),
-    },
-  });
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to check admin");
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
+  try {
+    const response = await fetch(`${API_BASE}/api/check-admin`, {
+      headers: {
+        ...(adminUserId ? { "x-admin-user-id": adminUserId } : {}),
+      },
+      signal: controller.signal,
+    });
+    clearTimeout(id);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Failed to check admin");
+    }
+    return response.json();
+  } catch (err) {
+    clearTimeout(id);
+    console.error("checkAdminRole error:", err);
+    throw err;
   }
-  return response.json();
 };
 
 export const fetchCustomerByPhone = async (

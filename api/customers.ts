@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import sql, { ensureTables } from "./_db";
-import { requireAdmin } from "./_auth";
+import sql, { ensureTables } from "./_db.js";
+import { requireAdmin } from "./_auth.js";
 
 const send = (res: ServerResponse, status: number, payload: unknown) => {
   res.statusCode = status;
