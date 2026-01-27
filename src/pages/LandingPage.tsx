@@ -33,12 +33,12 @@ export const LandingPage = () => {
             </Button>
           </SignedIn>
           <SignedOut>
-            <SignInButton mode="modal">
+            <SignInButton mode="redirect">
               <Button variant="secondary" className="text-sm">
                 Log In
               </Button>
             </SignInButton>
-            <SignInButton mode="modal">
+            <SignInButton mode="redirect">
               <Button className="text-sm">Get Started</Button>
             </SignInButton>
           </SignedOut>
@@ -61,7 +61,7 @@ export const LandingPage = () => {
             <span className="text-indigo-600">reimagined.</span>
           </h1>
           <p className="mt-6 text-xl text-neutral-500 max-w-2xl mx-auto leading-relaxed">
-            Streamline your badminton shop operations with pending orders, SMS
+            Streamline your badminton shop operations with pending orders,
             notifications, and customer history all in one place.
           </p>
         </div>
@@ -75,7 +75,7 @@ export const LandingPage = () => {
               Launch App
             </Button>
           ) : (
-            <SignInButton mode="modal">
+            <SignInButton mode="redirect">
               <Button className="bg-indigo-600 hover:bg-indigo-700 text-white text-lg px-8 py-6 h-auto rounded-full shadow-lg transition-transform transform hover:-translate-y-1">
                 Start for Free
               </Button>
@@ -93,7 +93,7 @@ export const LandingPage = () => {
           <FeatureCard
             icon="⚡"
             title="Fast Workflow"
-            description="Optimized for touch screens and quick data entry in busy shops."
+            description="Optimised for touch screens and quick data entry in busy shops."
           />
           <FeatureCard
             icon="📱"
