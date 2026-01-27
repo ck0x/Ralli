@@ -46,24 +46,27 @@ export const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <main className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white space-y-8">
-        <img
-          src="/Ralli_Logo.png"
-          alt="Ralli logo"
-          className="w-24 h-24 mx-auto"
-        />
-        <div className="space-y-4 max-w-3xl">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-neutral-900">
+      <main className="flex-1 flex flex-col items-center justify-center p-8 py-16 text-center bg-white">
+        <div className="mb-2 transition-all duration-700 animate-in fade-in slide-in-from-bottom-4">
+          <img
+            src="/Ralli_Logo.png"
+            alt="Ralli logo"
+            className="w-36 h-36 md:w-52 md:h-52 lg:w-72 lg:h-72 mx-auto"
+          />
+        </div>
+
+        <div className="max-w-3xl mb-10">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-neutral-900 leading-[1.1]">
             Stringing management <br />
             <span className="text-indigo-600">reimagined.</span>
           </h1>
-          <p className="text-xl text-neutral-500 max-w-2xl mx-auto">
+          <p className="mt-6 text-xl text-neutral-500 max-w-2xl mx-auto leading-relaxed">
             Streamline your badminton shop operations with pending orders, SMS
             notifications, and customer history all in one place.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 pt-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           {isLoaded && isSignedIn ? (
             <Button
               onClick={handleEnterApp}
