@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/Button";
@@ -18,6 +18,18 @@ export const Onboarding = () => {
   const [businessPhone, setBusinessPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Autofill business email from Clerk if available (editable)
+  useEffect(() => {
+    if (!businessEmail && user) {
+      const clerkUser = user as any;
+      const emailFromClerk =
+        clerkUser.primaryEmailAddress?.emailAddress ??
+        clerkUser.emailAddresses?.[0]?.emailAddress ??
+        null;
+      if (emailFromClerk) setBusinessEmail(emailFromClerk);
+    }
+  }, [user, businessEmail]);
+
   const [emailError, setEmailError] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const handleRegister = async () => {
@@ -29,23 +41,31 @@ export const Onboarding = () => {
       return;
     }
 
-    // Normalize and validate phone if provided
+    // Normalize and validate phone if provided (default NZ)
     let normalizedPhone: string | undefined;
     if (businessPhone) {
-      const normalized = normalizePhone(businessPhone);
+      const normalized = normalizePhone(businessPhone, "NZ");
       if (!normalized) {
-        setPhoneError("Invalid phone number");
+        setPhoneError("Invalid NZ phone number");
         return;
       }
       normalizedPhone = normalized;
     }
+
+    // Prefer provided businessEmail, otherwise derive from Clerk user
+    const clerkUser = user as any;
+    const emailFromClerk =
+      clerkUser.primaryEmailAddress?.emailAddress ??
+      clerkUser.emailAddresses?.[0]?.emailAddress ??
+      undefined;
+    const emailToUse = businessEmail ? businessEmail : emailFromClerk;
 
     setIsSubmitting(true);
     try {
       await registerMerchant(
         user.id,
         businessName,
-        businessEmail ? businessEmail : undefined,
+        emailToUse,
         normalizedPhone ? normalizedPhone : undefined,
       );
       // Invalidate to trigger checks in parent or redirect
@@ -103,6 +123,9 @@ export const Onboarding = () => {
               }}
               disabled={isSubmitting}
             />
+            <p className="text-xs text-neutral-500 mt-1">
+              Prefilled from your account (Clerk). You can change it if needed.
+            </p>
             {emailError && (
               <p className="text-xs text-red-500 mt-1">{emailError}</p>
             )}
@@ -114,7 +137,7 @@ export const Onboarding = () => {
             </label>
             <input
               className="w-full border p-2 rounded"
-              placeholder="+1 555-555-5555 (optional)"
+              placeholder="e.g. 021 123 4567 or 123 456 1638 (NZ, optional)"
               value={businessPhone}
               onChange={(e) => {
                 setPhoneError(null);
@@ -122,10 +145,12 @@ export const Onboarding = () => {
               }}
               onBlur={() => {
                 if (businessPhone) {
-                  if (isValidPhone(businessPhone)) {
-                    setBusinessPhone(formatPhoneForDisplay(businessPhone));
+                  if (isValidPhone(businessPhone, "NZ")) {
+                    setBusinessPhone(
+                      formatPhoneForDisplay(businessPhone, "NZ"),
+                    );
                   } else {
-                    setPhoneError("Invalid phone number");
+                    setPhoneError("Invalid NZ phone number");
                   }
                 }
               }}
