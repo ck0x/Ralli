@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/clerk-react";
+import toast from "react-hot-toast";
 import { fetchMerchants, updateMerchantStatus } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -22,19 +23,6 @@ export const SuperAdminDashboard = () => {
     name: string;
   } | null>(null);
 
-  // Toast State
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
-
-  useEffect(() => {
-    if (toast) {
-      const timer = setTimeout(() => setToast(null), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [toast]);
-
   const {
     data: merchants = [],
     isLoading,
@@ -53,16 +41,12 @@ export const SuperAdminDashboard = () => {
     try {
       await updateMerchantStatus(id, status, adminUserId);
       queryClient.invalidateQueries({ queryKey: ["merchants"] });
-      setToast({
-        message: `Successfully ${status === "approved" ? "approved" : status === "rejected" ? "rejected" : "reverted"} ${name}`,
-        type: "success",
-      });
+      toast.success(
+        `Successfully ${status === "approved" ? "approved" : status === "rejected" ? "rejected" : "reverted"} ${name}`,
+      );
     } catch (err: any) {
       console.error(err);
-      setToast({
-        message: err.message || "Failed to update status",
-        type: "error",
-      });
+      toast.error(err.message || "Failed to update status");
     }
   };
 
@@ -275,24 +259,6 @@ export const SuperAdminDashboard = () => {
           This will update the merchant's access to the platform immediately.
         </p>
       </Modal>
-
-      {/* Persistence Toast */}
-      {toast && (
-        <div
-          className={`fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border animate-in slide-in-from-right-full ${
-            toast.type === "success"
-              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-              : "bg-red-50 border-red-200 text-red-800"
-          }`}
-        >
-          {toast.type === "success" ? (
-            <CheckCircle className="w-5 h-5" />
-          ) : (
-            <AlertCircle className="w-5 h-5" />
-          )}
-          <span className="font-medium">{toast.message}</span>
-        </div>
-      )}
     </div>
   );
 };

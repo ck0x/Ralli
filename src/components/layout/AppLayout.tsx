@@ -8,6 +8,7 @@ import {
   SignedOut,
 } from "@clerk/clerk-react";
 import { useIsSuperAdmin } from "@/hooks/useIsSuperAdmin";
+import RalliLogo from "public/Ralli_Logo.png";
 
 type AppLayoutProps = {
   children: ReactNode;
@@ -32,7 +33,11 @@ export const AppLayout = ({ children, showAdminActions }: AppLayoutProps) => {
           to="/"
           className="brand hover:no-underline flex items-center gap-3"
         >
-          <div className="brand-mark text-2xl">🏸</div>
+          <img
+            src={RalliLogo}
+            alt="Ralli Logo"
+            className="brand-mark h-8 w-8"
+          />
           <div>
             <p className="brand-title text-xl font-bold">{t("appName")}</p>
             <p className="brand-subtitle text-xs text-neutral-400">

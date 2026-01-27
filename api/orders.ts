@@ -27,7 +27,7 @@ export default async function handler(
       }
 
       const rows = await sql`
-            SELECT o.id, o.customer_id, o.racket_brand, o.racket_model, o.string_category,
+            SELECT o.id, o.merchant_id, o.customer_id, o.racket_brand, o.racket_model, o.string_category,
                    o.string_focus, o.string_brand, o.string_model, o.tension, o.notes,
                    o.status, o.created_at, o.completed_at,
                    c.name AS customer_name, c.phone AS customer_phone, c.email AS customer_email

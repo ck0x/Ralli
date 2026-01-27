@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/clerk-react";
+import toast from "react-hot-toast";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -37,8 +38,13 @@ export const AdminDashboard = () => {
 
   const handleStatusUpdate = async (order: Order, status: OrderStatus) => {
     if (!adminUserId) return;
-    await updateOrderStatus(order.id, status, adminUserId);
-    await queryClient.invalidateQueries({ queryKey: ["orders"] });
+    try {
+      await updateOrderStatus(order.id, status, adminUserId);
+      await queryClient.invalidateQueries({ queryKey: ["orders"] });
+      toast.success(t(`messages.statusUpdated`));
+    } catch (error: any) {
+      toast.error(error.message || t("messages.error"));
+    }
   };
 
   const counts = useMemo(() => {

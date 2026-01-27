@@ -9,10 +9,12 @@ import { PendingApproval } from "@/pages/PendingApproval";
 import { NotFound } from "@/pages/NotFound";
 import { AuthGuard } from "@/components/layout/AuthGuard";
 import { SignedIn, SignedOut, SignIn, SignUp } from "@clerk/clerk-react";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" />
       <AppLayout showAdminActions>
         <Routes>
           {/* Public Routes */}

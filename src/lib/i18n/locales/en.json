@@ -43,6 +43,8 @@
     "adminOnlyView": "Admin access required.",
     "submitSuccess": "Order submitted. We'll notify you when it's completed.",
     "submitError": "Something went wrong. Please ask staff to try again.",
+    "statusUpdated": "Order status updated successfully.",
+    "error": "An error occurred.",
     "noOrders": "No orders yet.",
     "loading": "Loading..."
   },

@@ -5,7 +5,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useUser } from "@clerk/clerk-react";
-import { Maximize, Minimize } from "lucide-react";
+import { Maximize, Minimize, CheckCircle2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/Button";
@@ -137,10 +138,16 @@ export const CustomerKiosk = () => {
     try {
       await createOrder(values as OrderFormValues, adminUserId);
       setSubmissionStatus("success");
-      setStep(0);
-      reset(defaultValues);
-    } catch {
+      toast.success(t("messages.submitSuccess"));
+      // Give some time for animation/success message before reset
+      setTimeout(() => {
+        setStep(0);
+        reset(defaultValues);
+        setSubmissionStatus("idle");
+      }, 5000);
+    } catch (error: any) {
       setSubmissionStatus("error");
+      toast.error(error.message || t("messages.submitError"));
     }
   });
 
@@ -193,36 +200,53 @@ export const CustomerKiosk = () => {
       )}
     >
       <Card className={clsx("kiosk-card", isFullscreen && "w-full max-w-4xl")}>
-        <div className="mb-6 flex items-center justify-between">
-          <LanguageSwitcher />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleFullscreen}
-            type="button"
-            title={isFullscreen ? "Exit Full Screen" : "Full Screen"}
-          >
-            {isFullscreen ? (
-              <Minimize className="h-4 w-4" />
-            ) : (
-              <Maximize className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-        <div className="stepper">
-          {stepLabels.map((label, index) => (
-            <div
-              key={label}
-              className={`step ${index === step ? "active" : ""}`}
-            >
-              <span>{index + 1}</span>
-              <p>{label}</p>
+        {submissionStatus === "success" ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="relative mb-8">
+              <div className="absolute inset-0 animate-ping rounded-full bg-green-200 opacity-75"></div>
+              <div className="relative rounded-full bg-green-100 p-8 text-green-600 shadow-inner">
+                <CheckCircle2 className="h-24 w-24" />
+              </div>
             </div>
-          ))}
-        </div>
+            <h2 className="mb-4 text-4xl font-extrabold text-gray-900">
+              {t("messages.submitSuccess")}
+            </h2>
+            <p className="max-w-md text-xl text-gray-600 leading-relaxed">
+              Redirecting you to the start in a moments...
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="mb-6 flex items-center justify-between">
+              <LanguageSwitcher />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleFullscreen}
+                type="button"
+                title={isFullscreen ? "Exit Full Screen" : "Full Screen"}
+              >
+                {isFullscreen ? (
+                  <Minimize className="h-4 w-4" />
+                ) : (
+                  <Maximize className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+            <div className="stepper">
+              {stepLabels.map((label, index) => (
+                <div
+                  key={label}
+                  className={`step ${index === step ? "active" : ""}`}
+                >
+                  <span>{index + 1}</span>
+                  <p>{label}</p>
+                </div>
+              ))}
+            </div>
 
-        <form onSubmit={onSubmit}>
-          {step === 0 && (
+            <form onSubmit={onSubmit}>
+              {step === 0 && (
             <section className="step-panel">
               <h2>{t("steps.lookup")}</h2>
               <p className="muted">{t("messages.lookupHelp")}</p>
@@ -464,7 +488,7 @@ export const CustomerKiosk = () => {
             )}
           </div>
         </form>
-      </Card>
-    </div>
+        </>
+      )}
   );
 };
