@@ -1,0 +1,63 @@
+{
+  "appName": "Ralli 拉线",
+  "kioskTitle": "球拍穿线表单",
+  "adminTitle": "管理员面板",
+  "steps": {
+    "lookup": "查找档案",
+    "personal": "个人信息",
+    "racket": "球拍信息",
+    "string": "线材选择",
+    "review": "确认并提交"
+  },
+  "actions": {
+    "next": "下一步",
+    "back": "上一步",
+    "submit": "提交订单",
+    "lookup": "查询",
+    "useProfile": "使用档案",
+    "createNew": "新建",
+    "markCompleted": "标记完成",
+    "markInProgress": "标记进行中",
+    "refresh": "刷新",
+    "signIn": "登录"
+  },
+  "fields": {
+    "phone": "手机号",
+    "name": "姓名",
+    "email": "邮箱（可选）",
+    "preferredLanguage": "偏好语言",
+    "racketBrand": "球拍品牌",
+    "racketModel": "球拍型号",
+    "stringCategory": "线材类别",
+    "stringFocus": "打法偏好",
+    "stringBrand": "线材品牌",
+    "stringModel": "线材型号",
+    "tension": "磅数",
+    "notes": "备注"
+  },
+  "messages": {
+    "lookupHelp": "输入手机号查找已保存的档案。",
+    "profileFound": "已找到档案，可直接使用或修改。",
+    "profileNotFound": "未找到档案，请填写信息。",
+    "adminOnlySubmit": "需要工作人员登录后才能提交订单。",
+    "adminOnlyView": "需要管理员权限。",
+    "submitSuccess": "订单已提交，完成后会通知您。",
+    "submitError": "发生错误，请联系工作人员。",
+    "noOrders": "暂无订单。",
+    "loading": "加载中..."
+  },
+  "strings": {
+    "durable": "耐久型线材",
+    "repulsion": "弹力型线材",
+    "attack": "进攻（力量）",
+    "control": "控制（精准）"
+  },
+  "status": {
+    "pending": "待处理",
+    "in_progress": "进行中",
+    "completed": "已完成"
+  },
+  "filters": {
+    "all": "全部"
+  }
+}

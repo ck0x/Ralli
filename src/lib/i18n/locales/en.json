@@ -1,0 +1,65 @@
+{
+  "appName": "Ralli Stringing",
+  "kioskTitle": "Racket Stringing Form",
+  "adminTitle": "Admin Dashboard",
+  "steps": {
+    "lookup": "Find Profile",
+    "personal": "Personal Details",
+    "racket": "Racket Details",
+    "string": "String Selection",
+    "review": "Review & Submit"
+  },
+  "actions": {
+    "next": "Next",
+    "back": "Back",
+    "submit": "Submit Order",
+    "lookup": "Lookup",
+    "useProfile": "Use Profile",
+    "createNew": "Create New",
+    "markCompleted": "Mark Completed",
+    "markInProgress": "Mark In Progress",
+    "refresh": "Refresh",
+    "signIn": "Sign In"
+  },
+  "fields": {
+    "phone": "Phone Number",
+    "name": "Full Name",
+    "email": "Email (optional)",
+    "preferredLanguage": "Preferred Language",
+    "racketBrand": "Racket Brand",
+    "racketModel": "Racket Model",
+    "stringCategory": "String Category",
+    "stringFocus": "Play Style",
+    "stringBrand": "String Brand",
+    "stringModel": "String Model",
+    "tension": "Tension (lbs)",
+    "notes": "Notes"
+  },
+  "messages": {
+    "lookupHelp": "Enter a phone number to find a saved profile.",
+    "profileFound": "Profile found. You can use it or edit details.",
+    "profileNotFound": "No profile found. Please enter details.",
+    "adminOnlySubmit": "A staff member must sign in to submit this order.",
+    "adminOnlyView": "Admin access required.",
+    "submitSuccess": "Order submitted. We'll notify you when it's completed.",
+    "submitError": "Something went wrong. Please ask staff to try again.",
+    "statusUpdated": "Order status updated successfully.",
+    "error": "An error occurred.",
+    "noOrders": "No orders yet.",
+    "loading": "Loading..."
+  },
+  "strings": {
+    "durable": "Durable Strings",
+    "repulsion": "Repulsion Strings",
+    "attack": "Attack (Power-Focused)",
+    "control": "Control (Precision-Focused)"
+  },
+  "status": {
+    "pending": "Pending",
+    "in_progress": "In Progress",
+    "completed": "Completed"
+  },
+  "filters": {
+    "all": "All"
+  }
+}
