@@ -9,11 +9,17 @@ export type OrdersResponse = {
 export const registerMerchant = async (
   clerkUserId: string,
   businessName: string,
+  businessEmail?: string,
+  businessPhone?: string,
 ) => {
+  const body: any = { clerkUserId, businessName };
+  if (businessEmail) body.businessEmail = businessEmail;
+  if (businessPhone) body.businessPhone = businessPhone;
+
   const response = await fetch(`${API_BASE}/api/merchants`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ clerkUserId, businessName }),
+    body: JSON.stringify(body),
   });
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));

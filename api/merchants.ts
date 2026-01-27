@@ -42,8 +42,17 @@ export default async function handler(req: any, res: any) {
     }
 
     try {
-      const merchants =
-        await sql`SELECT * FROM merchants ORDER BY created_at DESC`;
+      const rows =
+        await sql`SELECT id, clerk_user_id, business_name, business_email, business_phone, status, created_at FROM merchants ORDER BY created_at DESC`;
+      const merchants = rows.map((r: any) => ({
+        id: r.id,
+        clerkUserId: r.clerk_user_id,
+        businessName: r.business_name,
+        businessEmail: r.business_email ?? null,
+        businessPhone: r.business_phone ?? null,
+        status: r.status,
+        createdAt: r.created_at ? new Date(r.created_at).toISOString() : null,
+      }));
       return send(res, 200, { merchants });
     } catch (error) {
       console.error(error);

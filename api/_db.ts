@@ -16,6 +16,8 @@ export const ensureTables = async () => {
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
       clerk_user_id text UNIQUE NOT NULL,
       business_name text NOT NULL,
+      business_email text,
+      business_phone text,
       status text NOT NULL DEFAULT 'pending', -- pending, approved, rejected
       created_at timestamptz DEFAULT now()
     );
@@ -66,6 +68,14 @@ export const ensureTables = async () => {
       
       IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'merchant_id') THEN
         ALTER TABLE orders ADD COLUMN merchant_id uuid REFERENCES merchants(id) ON DELETE CASCADE;
+      END IF;
+
+      -- Add contact fields to merchants if missing
+      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'merchants' AND column_name = 'business_email') THEN
+        ALTER TABLE merchants ADD COLUMN business_email text;
+      END IF;
+      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'merchants' AND column_name = 'business_phone') THEN
+        ALTER TABLE merchants ADD COLUMN business_phone text;
       END IF;
       
       BEGIN

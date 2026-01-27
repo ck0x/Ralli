@@ -75,11 +75,21 @@ export const SuperAdminDashboard = () => {
               className="p-4 flex justify-between items-center"
             >
               <div>
-                <h3 className="font-bold">{merchant.businessName}</h3>
+                <h3 className="font-bold">
+                  {merchant.businessName || merchant.clerkUserId}
+                </h3>
                 <p className="text-sm text-gray-500">
                   Status:{" "}
                   <span className={`status-${merchant.status}`}>
                     {merchant.status}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-500">
+                  Submitted:{" "}
+                  <span className="text-xs text-gray-400">
+                    {merchant.createdAt
+                      ? new Date(merchant.createdAt).toLocaleString()
+                      : "—"}
                   </span>
                 </p>
                 <div className="text-xs text-gray-400 mt-1">
