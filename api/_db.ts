@@ -7,7 +7,9 @@ let tablesEnsured = false;
 export const ensureTables = async () => {
   if (tablesEnsured) return;
 
+  console.log("ENSURING TABLES...");
   await sql`CREATE EXTENSION IF NOT EXISTS "pgcrypto";`;
+  console.log("EXTENSIONS OK");
 
   await sql`
     CREATE TABLE IF NOT EXISTS merchants (
@@ -18,6 +20,7 @@ export const ensureTables = async () => {
       created_at timestamptz DEFAULT now()
     );
   `;
+  console.log("MERCHANTS TABLE OK");
 
   await sql`
     CREATE TABLE IF NOT EXISTS customers (
@@ -31,6 +34,7 @@ export const ensureTables = async () => {
       UNIQUE(merchant_id, phone)
     );
   `;
+  console.log("CUSTOMERS TABLE OK");
 
   await sql`
     CREATE TABLE IF NOT EXISTS orders (
@@ -50,6 +54,7 @@ export const ensureTables = async () => {
       completed_at timestamptz
     );
   `;
+  console.log("ORDERS TABLE OK");
 
   // Migrations for existing tables
   await sql`
@@ -63,19 +68,17 @@ export const ensureTables = async () => {
         ALTER TABLE orders ADD COLUMN merchant_id uuid REFERENCES merchants(id) ON DELETE CASCADE;
       END IF;
       
-      -- We must drop the old unique constraint on phone if it exists and replace it with (merchant_id, phone)
-      -- This part is tricky in SQL without knowing constraint name, but usually 'customers_phone_key'
       BEGIN
         ALTER TABLE customers DROP CONSTRAINT IF EXISTS customers_phone_key;
         ALTER TABLE customers ADD CONSTRAINT customers_merchant_phone_key UNIQUE (merchant_id, phone);
       EXCEPTION WHEN OTHERS THEN
-        -- create generic unique index if constraint manipulation fails
         CREATE UNIQUE INDEX IF NOT EXISTS idx_customers_merchant_phone ON customers(merchant_id, phone);
       END;
 
     END
     $$;
   `;
+  console.log("MIGRATIONS OK");
 
   tablesEnsured = true;
 };

@@ -49,12 +49,42 @@ export const AuthGuard = ({ children, requireSuperAdmin }: AuthGuardProps) => {
 
   if (!isLoaded || !isRoleLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white text-neutral-900">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="h-4 w-4 bg-indigo-600 rounded-full mb-2 animate-bounce"></div>
-          <p className="text-sm font-medium text-neutral-500">
-            Loading Ralli...
-          </p>
+      <div className="flex items-center justify-center min-h-screen w-full bg-slate-50">
+        <div className="flex flex-col items-center gap-4 max-w-sm px-6 py-8 bg-white rounded-2xl shadow-xl border border-slate-100">
+          <div className="relative">
+            <div className="h-16 w-16 rounded-full border-4 border-slate-100 border-t-slate-900 animate-spin"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-slate-900 font-bold text-xl italic">R</span>
+            </div>
+          </div>
+          <div className="text-center">
+            <h2 className="text-xl font-bold text-slate-900 mb-1">
+              Loading Ralli...
+            </h2>
+            <p className="text-slate-500 text-sm">
+              Checking your access profile
+            </p>
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-slate-100 w-full">
+            <p className="text-[10px] text-slate-400 text-center uppercase tracking-widest font-medium">
+              Session Diagnostics
+            </p>
+            <div className="mt-2 grid grid-cols-2 gap-2 text-[10px]">
+              <div className="px-2 py-1 bg-slate-50 rounded">
+                Auth:{" "}
+                <span className="font-semibold text-slate-700">
+                  {isLoaded ? "Ready" : "Wait..."}
+                </span>
+              </div>
+              <div className="px-2 py-1 bg-slate-50 rounded text-center">
+                Role:{" "}
+                <span className="font-semibold text-slate-700 font-mono">
+                  {isRoleLoaded ? role : "Checking..."}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
