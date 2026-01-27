@@ -11,10 +11,8 @@ import toast from "react-hot-toast";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Spinner } from "@/components/ui/Loading";
 import { stringCatalog } from "@/lib/strings";
 import { createOrder, fetchCustomerByPhone } from "@/lib/api";
-import { useIsSuperAdmin } from "@/hooks/useIsSuperAdmin";
 import type { OrderFormValues } from "@/types";
 
 const schema = z.object({
@@ -38,6 +36,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 type StepStatus = "idle" | "loading" | "found" | "not_found" | "error";
+type SubmissionStatus = "idle" | "success" | "error" | "loading";
 
 const defaultValues: OrderFormValues = {
   phone: "",
@@ -58,7 +57,6 @@ export const CustomerKiosk = () => {
   const { t, i18n } = useTranslation();
   const { user } = useUser();
   const adminUserId = user?.id;
-  const { isSuperAdmin: isAdmin } = useIsSuperAdmin();
   const [step, setStep] = useState(0);
   const kioskRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -80,11 +78,9 @@ export const CustomerKiosk = () => {
     }
   };
 
-  const [showStringHelper, setShowStringHelper] = useState(false);
   const [lookupStatus, setLookupStatus] = useState<StepStatus>("idle");
-  const [submissionStatus, setSubmissionStatus] = useState<
-    "idle" | "success" | "error" | "loading"
-  >("idle");
+  const [submissionStatus, setSubmissionStatus] =
+    useState<SubmissionStatus>("idle");
 
   const {
     register,
@@ -463,9 +459,6 @@ export const CustomerKiosk = () => {
                       <p>{watch("tension")}</p>
                     </div>
                   </div>
-                  {submissionStatus === "success" && (
-                    <p className="success">{t("messages.submitSuccess")}</p>
-                  )}
                   {submissionStatus === "error" && (
                     <p className="error">{t("messages.submitError")}</p>
                   )}

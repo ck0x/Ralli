@@ -8,8 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 import { CardSkeleton } from "@/components/ui/Loading";
 import { formatPhoneForDisplay } from "@/lib/phone";
-import { CheckCircle, AlertCircle } from "lucide-react";
-import type { Merchant } from "@/types/merchant";
+import type { Merchant, MerchantStatus } from "@/types/merchant";
 
 export const SuperAdminDashboard = () => {
   const { user } = useUser();
@@ -34,7 +33,7 @@ export const SuperAdminDashboard = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
+    mutationFn: ({ id, status }: { id: string; status: MerchantStatus }) =>
       updateMerchantStatus(id, status, adminUserId!),
     onMutate: async ({ id, status }) => {
       await queryClient.cancelQueries({ queryKey: ["merchants"] });
@@ -43,12 +42,14 @@ export const SuperAdminDashboard = () => {
       ]);
 
       queryClient.setQueryData<Merchant[]>(["merchants"], (old) =>
-        old?.map((m) => (m.id === id ? { ...m, status } : m)),
+        old?.map((m) =>
+          m.id === id ? { ...m, status: status as MerchantStatus } : m,
+        ),
       );
 
       return { previousMerchants };
     },
-    onError: (err, variables, context) => {
+    onError: (_err, _variables, context) => {
       if (context?.previousMerchants) {
         queryClient.setQueryData(["merchants"], context.previousMerchants);
       }
@@ -57,7 +58,7 @@ export const SuperAdminDashboard = () => {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["merchants"] });
     },
-    onSuccess: (data, variables) => {
+    onSuccess: () => {
       toast.success(`Successfully updated!`);
     },
   });

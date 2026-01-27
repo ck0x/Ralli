@@ -8,7 +8,7 @@ import { Onboarding } from "@/pages/Onboarding";
 import { PendingApproval } from "@/pages/PendingApproval";
 import { NotFound } from "@/pages/NotFound";
 import { AuthGuard } from "@/components/layout/AuthGuard";
-import { SignedIn, SignedOut, SignIn, SignUp } from "@clerk/clerk-react";
+import { SignedIn } from "@clerk/clerk-react";
 import { Toaster } from "react-hot-toast";
 
 const App = () => {

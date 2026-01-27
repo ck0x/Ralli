@@ -14,7 +14,7 @@ type AppLayoutProps = {
   showAdminActions?: boolean;
 };
 
-export const AppLayout = ({ children, showAdminActions }: AppLayoutProps) => {
+export const AppLayout = ({ children }: AppLayoutProps) => {
   const { t } = useTranslation();
   const { isSuperAdmin, isLoaded } = useIsSuperAdmin();
   const location = useLocation();

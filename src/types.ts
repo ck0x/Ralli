@@ -1,5 +1,3 @@
-import { MerchantStatus } from "./types/merchant";
-
 export type OrderStatus = "pending" | "in_progress" | "completed";
 
 export type Customer = {
