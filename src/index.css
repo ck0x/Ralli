@@ -528,6 +528,30 @@ textarea:focus {
   color: #111827;
 }
 
+.summary-card.pending {
+  border-left: 4px solid #f59e0b;
+}
+
+.summary-card.pending strong {
+  color: #b45309;
+}
+
+.summary-card.in-progress {
+  border-left: 4px solid #3b82f6;
+}
+
+.summary-card.in-progress strong {
+  color: #1d4ed8;
+}
+
+.summary-card.completed {
+  border-left: 4px solid #10b981;
+}
+
+.summary-card.completed strong {
+  color: #047857;
+}
+
 .admin-list {
   display: grid;
   gap: 1rem;
@@ -552,6 +576,45 @@ textarea:focus {
 .order-header h3 {
   margin: 0 0 0.25rem;
   font-size: 1.25rem;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Specific status colors */
+.status.pending,
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status.in_progress,
+.status-in_progress {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status.completed,
+.status-completed {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status.approved,
+.status-approved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status.rejected,
+.status-rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
 @media (max-width: 768px) {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/clerk-react";
 import toast from "react-hot-toast";
 import { fetchMerchants, updateMerchantStatus } from "@/lib/api";
@@ -125,7 +125,7 @@ export const SuperAdminDashboard = () => {
                 </h3>
                 <p className="text-sm text-gray-500">
                   Status:{" "}
-                  <span className={`status-${merchant.status}`}>
+                  <span className={`status ${merchant.status}`}>
                     {merchant.status}
                   </span>
                 </p>

@@ -25,11 +25,16 @@ export const AdminDashboard = () => {
   const adminUserId = user?.id;
 
   const [statusFilter, setStatusFilter] = useState<OrderStatus | undefined>(
-    "pending",
+    undefined,
   );
   const queryClient = useQueryClient();
 
-  const { data: orders = [], isLoading: isOrdersLoading } = useQuery({
+  const {
+    data: orders = [],
+    isLoading: isOrdersLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["orders", statusFilter, adminUserId],
     queryFn: () => fetchOrders(statusFilter, adminUserId),
     enabled: !!adminUserId && !isSuperAdmin,
@@ -100,6 +105,26 @@ export const AdminDashboard = () => {
     return summary;
   }, [orders]);
 
+  if (isError) {
+    return (
+      <div className="admin p-6">
+        <Card className="p-6 bg-red-50 border-red-200">
+          <h2 className="text-red-800">{t("messages.error")}</h2>
+          <p className="text-red-600">
+            {error?.message || "Failed to load orders"}
+          </p>
+          <Button
+            onClick={() =>
+              queryClient.invalidateQueries({ queryKey: ["orders"] })
+            }
+          >
+            {t("actions.refresh")}
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   if (isOrdersLoading) {
     return (
       <div className="admin space-y-6">
@@ -125,15 +150,15 @@ export const AdminDashboard = () => {
       <Card className="admin-summary">
         <h2>{t("adminTitle")}</h2>
         <div className="summary-grid">
-          <div>
+          <div className="summary-card pending">
             <span className="label">{t("status.pending")}</span>
             <strong>{counts.pending}</strong>
           </div>
-          <div>
+          <div className="summary-card in-progress">
             <span className="label">{t("status.in_progress")}</span>
             <strong>{counts.in_progress}</strong>
           </div>
-          <div>
+          <div className="summary-card completed">
             <span className="label">{t("status.completed")}</span>
             <strong>{counts.completed}</strong>
           </div>

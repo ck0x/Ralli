@@ -15,16 +15,13 @@ export default async function handler(
 
   if (req.method === "GET") {
     try {
-      await ensureTables();
-      const status = req.query?.status;
-
-      let whereClause = sql`TRUE`;
-      if (auth.role === "merchant") {
-        whereClause = sql`${whereClause} AND o.merchant_id = ${auth.merchant.id}`;
-      }
-      if (status) {
-        whereClause = sql`${whereClause} AND o.status = ${status}`;
-      }
+      // Use URL to reliably parse query params in serverless env
+      const url = new URL(
+        req.url || "",
+        `http://${req.headers.host || "localhost"}`,
+      );
+      const statusFilter = url.searchParams.get("status");
+      const merchantId = auth.role === "merchant" ? auth.merchant.id : null;
 
       const rows = await sql`
             SELECT o.id, o.merchant_id, o.customer_id, o.racket_brand, o.racket_model, o.string_category,
@@ -33,7 +30,8 @@ export default async function handler(
                    c.name AS customer_name, c.phone AS customer_phone, c.email AS customer_email
             FROM orders o
             JOIN customers c ON c.id = o.customer_id
-            WHERE ${whereClause}
+            WHERE (${merchantId}::text IS NULL OR o.merchant_id = ${merchantId}::uuid)
+              AND (${statusFilter}::text IS NULL OR o.status = ${statusFilter})
             ORDER BY o.created_at DESC
             LIMIT 200
           `;
