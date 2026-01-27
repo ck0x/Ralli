@@ -144,7 +144,7 @@ export const CustomerKiosk = () => {
         setStep(0);
         reset(defaultValues);
         setSubmissionStatus("idle");
-      }, 5000);
+      }, 3000);
     } catch (error: any) {
       setSubmissionStatus("error");
       toast.error(error.message || t("messages.submitError"));

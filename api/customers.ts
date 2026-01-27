@@ -28,7 +28,6 @@ export default async function handler(
   }
 
   try {
-    await ensureTables();
     const rows = await sql`
       SELECT id, name, phone, email, preferred_language, merchant_id
       FROM customers

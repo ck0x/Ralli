@@ -33,21 +33,40 @@ export const SuperAdminDashboard = () => {
     enabled: !!adminUserId,
   });
 
+  const updateMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      updateMerchantStatus(id, status, adminUserId!),
+    onMutate: async ({ id, status }) => {
+      await queryClient.cancelQueries({ queryKey: ["merchants"] });
+      const previousMerchants = queryClient.getQueryData<Merchant[]>([
+        "merchants",
+      ]);
+
+      queryClient.setQueryData<Merchant[]>(["merchants"], (old) =>
+        old?.map((m) => (m.id === id ? { ...m, status } : m)),
+      );
+
+      return { previousMerchants };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousMerchants) {
+        queryClient.setQueryData(["merchants"], context.previousMerchants);
+      }
+      toast.error("Failed to update merchant status");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["merchants"] });
+    },
+    onSuccess: (data, variables) => {
+      toast.success(`Successfully updated!`);
+    },
+  });
+
   const handleStatusChange = async () => {
     if (!adminUserId || !pendingAction) return;
-    const { id, status, name } = pendingAction;
+    const { id, status } = pendingAction;
     setPendingAction(null);
-
-    try {
-      await updateMerchantStatus(id, status, adminUserId);
-      queryClient.invalidateQueries({ queryKey: ["merchants"] });
-      toast.success(
-        `Successfully ${status === "approved" ? "approved" : status === "rejected" ? "rejected" : "reverted"} ${name}`,
-      );
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err.message || "Failed to update status");
-    }
+    updateMutation.mutate({ id, status });
   };
 
   const openConfirmation = (

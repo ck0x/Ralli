@@ -18,10 +18,6 @@ export default async function handler(
   }
 
   try {
-    console.log("Ensuring tables...");
-    await ensureTables();
-    console.log("Tables ensured.");
-
     if (isSuperAdmin(headerUserId)) {
       console.log("User is super admin");
       send(res, 200, { role: "super_admin", userId: headerUserId });

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/clerk-react";
 import toast from "react-hot-toast";
 
@@ -36,15 +36,56 @@ export const AdminDashboard = () => {
     retry: false,
   });
 
-  const handleStatusUpdate = async (order: Order, status: OrderStatus) => {
+  const updateMutation = useMutation({
+    mutationFn: ({
+      orderId,
+      status,
+    }: {
+      orderId: string;
+      status: OrderStatus;
+    }) => updateOrderStatus(orderId, status, adminUserId),
+    onMutate: async ({ orderId, status }) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ["orders"] });
+
+      // Snapshot the previous value
+      const previousOrders = queryClient.getQueryData<Order[]>([
+        "orders",
+        statusFilter,
+        adminUserId,
+      ]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData<Order[]>(
+        ["orders", statusFilter, adminUserId],
+        (old) =>
+          old?.map((or) => (or.id === orderId ? { ...or, status } : or)) || [],
+      );
+
+      return { previousOrders };
+    },
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousOrders) {
+        queryClient.setQueryData(
+          ["orders", statusFilter, adminUserId],
+          context.previousOrders,
+        );
+      }
+      toast.error(t("messages.error"));
+    },
+    onSettled: () => {
+      // Always refetch in background to sync with server
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+    onSuccess: () => {
+      toast.success(t("messages.statusUpdated"));
+    },
+  });
+
+  const handleStatusUpdate = (order: Order, status: OrderStatus) => {
     if (!adminUserId) return;
-    try {
-      await updateOrderStatus(order.id, status, adminUserId);
-      await queryClient.invalidateQueries({ queryKey: ["orders"] });
-      toast.success(t(`messages.statusUpdated`));
-    } catch (error: any) {
-      toast.error(error.message || t("messages.error"));
-    }
+    updateMutation.mutate({ orderId: order.id, status });
   };
 
   const counts = useMemo(() => {

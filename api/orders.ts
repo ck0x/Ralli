@@ -74,7 +74,7 @@ export default async function handler(
     }
 
     try {
-      const payload = (await readBody(req)) as OrderPayload;
+      const payload = (await readBody(req)) as any;
       const phone = payload.phone?.trim();
       const merchantId = auth.merchant.id;
 
@@ -89,36 +89,17 @@ export default async function handler(
         return;
       }
 
-      await ensureTables();
-
-      let customerId: string;
-
-      // Check if customer exists for this merchant
-      const existingCustomers = await sql`
-        SELECT id FROM customers 
-        WHERE phone = ${phone} AND merchant_id = ${merchantId}
-        LIMIT 1
+      // Upsert customer and insert order in a single sequence
+      // We use ON CONFLICT on (merchant_id, phone) to update existing info
+      const [customer] = await sql`
+        INSERT INTO customers (merchant_id, name, phone, email, preferred_language)
+        VALUES (${merchantId}, ${payload.name}, ${phone}, ${payload.email ?? null}, ${payload.preferredLanguage ?? "en"})
+        ON CONFLICT (merchant_id, phone) DO UPDATE SET
+          name = EXCLUDED.name,
+          email = EXCLUDED.email,
+          preferred_language = EXCLUDED.preferred_language
+        RETURNING id
       `;
-
-      if (existingCustomers.length > 0) {
-        customerId = existingCustomers[0].id;
-        // Update basic info if needed
-        await sql`
-            UPDATE customers SET
-            name = ${payload.name},
-            email = ${payload.email ?? null},
-            preferred_language = ${payload.preferredLanguage ?? "en"}
-            WHERE id = ${customerId}
-        `;
-      } else {
-        // Create new customer for this merchant
-        const newCustomer = await sql`
-            INSERT INTO customers (merchant_id, name, phone, email, preferred_language)
-            VALUES (${merchantId}, ${payload.name}, ${phone}, ${payload.email ?? null}, ${payload.preferredLanguage ?? "en"})
-            RETURNING id
-          `;
-        customerId = newCustomer[0].id;
-      }
 
       const orderRows = await sql`
         INSERT INTO orders (
@@ -135,7 +116,7 @@ export default async function handler(
           status
         ) VALUES (
           ${merchantId},
-          ${customerId},
+          ${customer.id},
           ${payload.racketBrand},
           ${payload.racketModel ?? null},
           ${payload.stringCategory},

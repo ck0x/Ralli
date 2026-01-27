@@ -5,10 +5,24 @@ export const isSuperAdmin = (userId: string) => {
   return userId === adminId;
 };
 
+// Simple in-memory cache for merchant lookups to reduce DB roundtrips
+const merchantCache = new Map<string, { merchant: any; timestamp: number }>();
+const CACHE_TTL = 30000; // 30 seconds
+
 export const getMerchantByUserId = async (clerkUserId: string) => {
+  const cached = merchantCache.get(clerkUserId);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.merchant;
+  }
+
   const [merchant] = await sql`
     SELECT * FROM merchants WHERE clerk_user_id = ${clerkUserId}
   `;
+
+  if (merchant) {
+    merchantCache.set(clerkUserId, { merchant, timestamp: Date.now() });
+  }
+
   return merchant;
 };
 
