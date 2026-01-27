@@ -23,7 +23,7 @@ export const SuperAdminDashboard = () => {
 
   const handleStatusChange = async (
     merchantId: string,
-    status: "approved" | "rejected",
+    status: "approved" | "rejected" | "pending",
   ) => {
     if (!adminUserId) return;
     try {
@@ -33,6 +33,25 @@ export const SuperAdminDashboard = () => {
       console.error(err);
       alert(err.message || "Failed to update status");
     }
+  };
+
+  // Confirmation wrapper to prevent accidental clicks
+  const confirmAndChange = async (
+    merchantId: string,
+    status: "approved" | "rejected" | "pending",
+    name?: string,
+  ) => {
+    const actionLabel =
+      status === "approved"
+        ? "approve"
+        : status === "rejected"
+          ? "reject"
+          : "revert to pending";
+    const confirmation = window.confirm(
+      `Are you sure you want to ${actionLabel} ${name ? `\"${name}\"` : "this merchant"}?`,
+    );
+    if (!confirmation) return;
+    await handleStatusChange(merchantId, status);
   };
 
   if (isLoading) {
@@ -116,7 +135,11 @@ export const SuperAdminDashboard = () => {
                   <>
                     <Button
                       onClick={() =>
-                        handleStatusChange(merchant.id, "approved")
+                        confirmAndChange(
+                          merchant.id,
+                          "approved",
+                          merchant.businessName,
+                        )
                       }
                     >
                       Approve
@@ -124,17 +147,56 @@ export const SuperAdminDashboard = () => {
                     <Button
                       variant="secondary"
                       onClick={() =>
-                        handleStatusChange(merchant.id, "rejected")
+                        confirmAndChange(
+                          merchant.id,
+                          "rejected",
+                          merchant.businessName,
+                        )
                       }
                     >
                       Reject
                     </Button>
                   </>
                 )}
+
+                {merchant.status === "rejected" && (
+                  <>
+                    <Button
+                      onClick={() =>
+                        confirmAndChange(
+                          merchant.id,
+                          "approved",
+                          merchant.businessName,
+                        )
+                      }
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() =>
+                        confirmAndChange(
+                          merchant.id,
+                          "pending",
+                          merchant.businessName,
+                        )
+                      }
+                    >
+                      Revert
+                    </Button>
+                  </>
+                )}
+
                 {merchant.status === "approved" && (
                   <Button
                     variant="secondary"
-                    onClick={() => handleStatusChange(merchant.id, "rejected")}
+                    onClick={() =>
+                      confirmAndChange(
+                        merchant.id,
+                        "rejected",
+                        merchant.businessName,
+                      )
+                    }
                   >
                     Revoke
                   </Button>

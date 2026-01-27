@@ -76,7 +76,7 @@ export default async function handler(req: any, res: any) {
 
     try {
       const { merchantId, status } = await readBody(req);
-      if (!["approved", "rejected"].includes(status)) {
+      if (!["approved", "rejected", "pending"].includes(status)) {
         return send(res, 400, { error: "Invalid status" });
       }
 
