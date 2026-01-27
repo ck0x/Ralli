@@ -20,10 +20,10 @@ export default async function handler(
 
       let whereClause = sql`TRUE`;
       if (auth.role === "merchant") {
-        whereClause = sql`${whereClause} AND merchant_id = ${auth.merchant.id}`;
+        whereClause = sql`${whereClause} AND o.merchant_id = ${auth.merchant.id}`;
       }
       if (status) {
-        whereClause = sql`${whereClause} AND status = ${status}`;
+        whereClause = sql`${whereClause} AND o.status = ${status}`;
       }
 
       const rows = await sql`
