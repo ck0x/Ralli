@@ -1,12 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import sql, { ensureTables } from "./_db.js";
 import { requireAdmin } from "./_auth.js";
-
-const send = (res: ServerResponse, status: number, payload: unknown) => {
-  res.statusCode = status;
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(payload));
-};
+import { send } from "./_utils.js";
 
 export default async function handler(
   req: IncomingMessage & { query?: Record<string, string> },

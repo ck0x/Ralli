@@ -2,41 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import sql, { ensureTables } from "./_db.js";
 import { requireAdmin } from "./_auth.js";
 import { sendCompletionEmail } from "./_email.js";
-
-type OrderPayload = {
-  phone: string;
-  name: string;
-  email?: string;
-  preferredLanguage?: string;
-  racketBrand: string;
-  racketModel?: string;
-  stringCategory: "durable" | "repulsion";
-  stringFocus: "attack" | "control";
-  stringBrand: string;
-  stringModel: string;
-  tension: number;
-  notes?: string;
-};
-
-type StatusPayload = {
-  orderId: string;
-  status: "pending" | "in_progress" | "completed";
-};
-
-const send = (res: ServerResponse, status: number, payload: unknown) => {
-  res.statusCode = status;
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(payload));
-};
-
-const readBody = async (req: IncomingMessage) => {
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) {
-    chunks.push(chunk as Buffer);
-  }
-  const raw = Buffer.concat(chunks).toString("utf-8");
-  return raw ? JSON.parse(raw) : {};
-};
+import { send, readBody } from "./_utils.js";
 
 export default async function handler(
   req: IncomingMessage & { query?: Record<string, string> },

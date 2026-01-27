@@ -1,30 +1,22 @@
 import sql, { ensureTables } from "./_db.js";
-import { requireAdmin, isSuperAdmin } from "./_auth.js";
-
-const send = (res: any, status: number, payload: any) => {
-  res.statusCode = status;
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(payload));
-};
-
-const readBody = async (req: any) => {
-  const chunks: any[] = [];
-  for await (const chunk of req) {
-    chunks.push(chunk);
-  }
-  const body = Buffer.concat(chunks).toString();
-  return body ? JSON.parse(body) : {};
-};
+import { requireAdmin } from "./_auth.js";
+import { send, readBody } from "./_utils.js";
 
 export default async function handler(req: any, res: any) {
+  console.log("MERCHANTS HANDLER START - Method:", req.method);
   await ensureTables();
 
   if (req.method === "POST") {
     try {
-      const { clerkUserId, businessName } = await readBody(req);
+      const body = await readBody(req);
+      console.log("POST BODY:", body);
+      const { clerkUserId, businessName } = body;
 
       if (!clerkUserId || !businessName) {
-        return send(res, 400, { error: "Missing fields" });
+        console.error("Missing fields:", { clerkUserId, businessName });
+        return send(res, 400, {
+          error: "Missing fields (clerkUserId or businessName)",
+        });
       }
 
       const [newMerchant] = await sql`
@@ -41,13 +33,10 @@ export default async function handler(req: any, res: any) {
     }
   }
 
-  // Examples: GET (List merchants), PATCH (Approve/Reject)
-  // These REQUIRE admin/auth context
   const auth = await requireAdmin(req, res);
   if (!auth) return;
 
   if (req.method === "GET") {
-    // Only Super Admin can list all merchants
     if (auth.role !== "super_admin") {
       return send(res, 403, { error: "Forbidden" });
     }
@@ -63,7 +52,6 @@ export default async function handler(req: any, res: any) {
   }
 
   if (req.method === "PATCH") {
-    // Approve/Reject merchant (Super Admin only)
     if (auth.role !== "super_admin") {
       return send(res, 403, { error: "Forbidden" });
     }
@@ -86,4 +74,6 @@ export default async function handler(req: any, res: any) {
       return send(res, 500, { error: "Update failed" });
     }
   }
+
+  return send(res, 405, { error: "Method not allowed" });
 }
