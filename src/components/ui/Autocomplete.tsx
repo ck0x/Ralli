@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import clsx from "clsx";
-import { ChevronDown, Check } from "lucide-react";
+import { Check } from "lucide-react";
 
 interface AutocompleteProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { stringCatalog } from "@/lib/strings";
 import { Shield, Zap, Crosshair, Swords } from "lucide-react";
 

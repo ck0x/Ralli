@@ -107,8 +107,6 @@ export const CustomerKiosk = () => {
     mode: "onBlur",
   });
 
-  const stringCategory = watch("stringCategory");
-  const stringFocus = watch("stringFocus");
   const watchedStringBrand = watch("stringBrand");
   const watchedStringModel = watch("stringModel");
 
