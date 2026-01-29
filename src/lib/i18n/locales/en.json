@@ -40,7 +40,7 @@
     "notes": "Notes"
   },
   "messages": {
-    "lookupHelp": "Enter a phone number to find a saved profile.",
+    "lookupHelp": "Enter a new or existing phone number.",
     "profileFound": "Profile found. You can use it or edit details.",
     "profileNotFound": "No profile found. Please enter details.",
     "adminOnlySubmit": "A staff member must sign in to submit this order.",
