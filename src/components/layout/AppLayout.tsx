@@ -44,16 +44,18 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
           <img
             src="/Ralli_Logo.png"
             alt="Ralli Logo"
-            className="brand-mark h-8 w-8"
+            className="brand-mark h-6 w-6 md:h-8 md:w-8"
           />
           <div>
-            <p className="brand-title text-xl font-bold">{t("appName")}</p>
-            <p className="brand-subtitle text-xs text-neutral-400">
+            <p className="brand-title text-base font-bold md:text-xl">
+              {t("appName")}
+            </p>
+            <p className="brand-subtitle hidden text-xs text-neutral-400 md:block">
               Badminton Stringing Tracker
             </p>
           </div>
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           <SignedIn>
             {isLoaded &&
               isSuperAdmin &&

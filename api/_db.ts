@@ -70,6 +70,18 @@ export const ensureTables = async () => {
         ALTER TABLE orders ADD COLUMN merchant_id uuid REFERENCES merchants(id) ON DELETE CASCADE;
       END IF;
 
+      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'pre_stretch') THEN
+        ALTER TABLE orders ADD COLUMN pre_stretch text;
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'due_date') THEN
+        ALTER TABLE orders ADD COLUMN due_date timestamptz;
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'is_express') THEN
+        ALTER TABLE orders ADD COLUMN is_express boolean DEFAULT false;
+      END IF;
+
       -- Add contact fields to merchants if missing
       IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'merchants' AND column_name = 'business_email') THEN
         ALTER TABLE merchants ADD COLUMN business_email text;

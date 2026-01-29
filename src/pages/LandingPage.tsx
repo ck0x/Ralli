@@ -61,7 +61,7 @@ export const LandingPage = () => {
 
       {/* Hero Section */}
       <main className="flex-1 flex flex-col items-center justify-center p-8 py-16 text-center bg-white">
-        <div className="mb-2 transition-all duration-700 animate-in fade-in slide-in-from-bottom-4">
+        <div className="mb-2 transition-all duration-700 animate-slide-up">
           <img
             src="/Ralli_Logo.png"
             alt="Ralli logo"

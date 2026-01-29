@@ -33,6 +33,10 @@
     "stringBrand": "String Brand",
     "stringModel": "String Model",
     "tension": "Tension (lbs)",
+    "preStretch": "Pre-stretch",
+    "preStretchToggle": "Pre-stretch?",
+    "dueDate": "Requested Due Date",
+    "isExpress": "Express Stringing (+$10 extra)",
     "notes": "Notes"
   },
   "messages": {
