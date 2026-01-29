@@ -164,10 +164,10 @@ export const CustomerKiosk = () => {
     setValue("preStretch", order.preStretch || "");
     setValue("stringCategory", order.stringCategory);
     setValue("stringFocus", order.stringFocus);
-    
+
     // We already have customer details from the lookup
     setShowPastOrdersModal(false);
-    
+
     // Advance to review step directly? Or Racket step?
     // Prompt said "pick and submit" or "submit new one and continue".
     // "Suggests past configurations... pick and submit".
@@ -238,7 +238,10 @@ export const CustomerKiosk = () => {
         if (result?.customer) {
           setValue("name", result.customer.name);
           setValue("email", result.customer.email ?? "");
-          setValue("preferredLanguage", result.customer.preferredLanguage ?? "en");
+          setValue(
+            "preferredLanguage",
+            result.customer.preferredLanguage ?? "en",
+          );
           if (result.customer.preferredLanguage) {
             void i18n.changeLanguage(result.customer.preferredLanguage);
           }
@@ -250,7 +253,7 @@ export const CustomerKiosk = () => {
             return; // Wait for modal
           }
         } else {
-            setLookupStatus("not_found");
+          setLookupStatus("not_found");
         }
       } catch (e) {
         console.error("Lookup failed", e);

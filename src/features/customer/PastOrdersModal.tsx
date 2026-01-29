@@ -59,7 +59,9 @@ export const PastOrdersModal: React.FC<PastOrdersModalProps> = ({
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-1.5">
                     <Clock className="w-3 h-3" />
-                    {new Date(order.createdAt as unknown as string).toLocaleDateString(undefined, {
+                    {new Date(
+                      order.createdAt as unknown as string,
+                    ).toLocaleDateString(undefined, {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
