@@ -401,7 +401,19 @@ export const CustomerKiosk = () => {
 
               {step === 3 && (
                 <section className="step-panel">
-                  <h2>{t("steps.string")}</h2>
+                  <div className="flex items-center justify-between">
+                    <h2>{t("steps.string")}</h2>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowWizard(true)}
+                      className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white shadow-sm transition-all"
+                    >
+                      <span className="mr-2 hidden sm:inline">Not sure?</span>
+                      Help me choose
+                    </Button>
+                  </div>
 
                   <input type="hidden" {...register("stringCategory")} />
                   <input type="hidden" {...register("stringFocus")} />
@@ -429,16 +441,6 @@ export const CustomerKiosk = () => {
                       error={errors.stringModel?.message}
                       placeholder="e.g. BG80"
                     />
-                  </div>
-
-                  <div className="mb-4 mt-2">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => setShowWizard(true)}
-                    >
-                      Not sure? Help me choose
-                    </Button>
                   </div>
 
                   <StringWizardModal

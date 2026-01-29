@@ -51,19 +51,19 @@ export const StringWizardModal: React.FC<StringWizardModalProps> = ({
     >
       <div className="min-h-[300px] flex flex-col">
         {step === 0 && (
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 animate-in fade-in slide-in-from-right-8 duration-300">
+          <div className="flex-1 flex flex-col items-center justify-center gap-6 animate-in slide-in-from-right-8 fade-in duration-300 fill-mode-forwards">
             <h3 className="text-xl font-bold text-center">
               What matters most to you?
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
               <button
-                className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border-2 border-gray-100 bg-white hover:border-gray-900 hover:bg-gray-50 transition-all text-center group"
+                className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border-2 border-gray-100 bg-white hover:border-blue-500 hover:bg-blue-50 transition-all text-center group active:scale-95 duration-200"
                 onClick={() => {
                   setSelection((prev) => ({ ...prev, category: "durable" }));
                   setStep(1);
                 }}
               >
-                <div className="p-4 rounded-full bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
+                <div className="p-4 rounded-full bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors">
                   <Shield size={32} />
                 </div>
                 <div>
@@ -77,13 +77,13 @@ export const StringWizardModal: React.FC<StringWizardModalProps> = ({
               </button>
 
               <button
-                className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border-2 border-gray-100 bg-white hover:border-gray-900 hover:bg-gray-50 transition-all text-center group"
+                className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border-2 border-gray-100 bg-white hover:border-orange-500 hover:bg-orange-50 transition-all text-center group active:scale-95 duration-200"
                 onClick={() => {
                   setSelection((prev) => ({ ...prev, category: "repulsion" }));
                   setStep(1);
                 }}
               >
-                <div className="p-4 rounded-full bg-orange-50 text-orange-600 group-hover:scale-110 transition-transform">
+                <div className="p-4 rounded-full bg-orange-50 text-orange-600 group-hover:bg-orange-100 transition-colors">
                   <Zap size={32} />
                 </div>
                 <div>
@@ -100,19 +100,19 @@ export const StringWizardModal: React.FC<StringWizardModalProps> = ({
         )}
 
         {step === 1 && (
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 animate-in fade-in slide-in-from-right-8 duration-300">
+          <div className="flex-1 flex flex-col items-center justify-center gap-6 animate-in slide-in-from-right-8 fade-in duration-300 fill-mode-forwards">
             <h3 className="text-xl font-bold text-center">
               What is your play style?
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
               <button
-                className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border-2 border-gray-100 bg-white hover:border-gray-900 hover:bg-gray-50 transition-all text-center group"
+                className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border-2 border-gray-100 bg-white hover:border-red-500 hover:bg-red-50 transition-all text-center group active:scale-95 duration-200"
                 onClick={() => {
                   setSelection((prev) => ({ ...prev, focus: "attack" }));
                   setStep(2);
                 }}
               >
-                <div className="p-4 rounded-full bg-red-50 text-red-600 group-hover:scale-110 transition-transform">
+                <div className="p-4 rounded-full bg-red-50 text-red-600 group-hover:bg-red-100 transition-colors">
                   <Swords size={32} />
                 </div>
                 <div>
@@ -126,13 +126,13 @@ export const StringWizardModal: React.FC<StringWizardModalProps> = ({
               </button>
 
               <button
-                className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border-2 border-gray-100 bg-white hover:border-gray-900 hover:bg-gray-50 transition-all text-center group"
+                className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border-2 border-gray-100 bg-white hover:border-emerald-500 hover:bg-emerald-50 transition-all text-center group active:scale-95 duration-200"
                 onClick={() => {
                   setSelection((prev) => ({ ...prev, focus: "control" }));
                   setStep(2);
                 }}
               >
-                <div className="p-4 rounded-full bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
+                <div className="p-4 rounded-full bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100 transition-colors">
                   <Crosshair size={32} />
                 </div>
                 <div>
@@ -152,7 +152,7 @@ export const StringWizardModal: React.FC<StringWizardModalProps> = ({
         )}
 
         {step === 2 && recommendedGroup && (
-          <div className="flex-1 flex flex-col gap-4 animate-in fade-in slide-in-from-right-8 duration-300">
+          <div className="flex-1 flex flex-col gap-4 animate-in slide-in-from-right-8 fade-in duration-300 fill-mode-forwards">
             <div className="text-center mb-2">
               <p className="text-gray-600">
                 Based on your choices:{" "}
@@ -170,7 +170,7 @@ export const StringWizardModal: React.FC<StringWizardModalProps> = ({
               {recommendedGroup.options.map((option) => (
                 <button
                   key={`${option.brand}-${option.model}`}
-                  className="w-full flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-gray-900 hover:bg-gray-50 transition-all"
+                  className="w-full flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all active:scale-[0.99]"
                   onClick={() => {
                     onSelect({
                       brand: option.brand,
