@@ -11,7 +11,10 @@ import toast from "react-hot-toast";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Autocomplete } from "@/components/ui/Autocomplete";
+import { StringWizardModal } from "./StringWizardModal";
 import { stringCatalog } from "@/lib/strings";
+import { racketBrands, popularRacketModels } from "@/lib/rackets";
 import { createOrder, fetchCustomerByPhone } from "@/lib/api";
 import type { OrderFormValues } from "@/types";
 
@@ -22,8 +25,8 @@ const schema = z.object({
   preferredLanguage: z.string(),
   racketBrand: z.string().min(1, "Racket brand is required"),
   racketModel: z.string().optional().or(z.literal("")),
-  stringCategory: z.enum(["durable", "repulsion"]),
-  stringFocus: z.enum(["attack", "control"]),
+  stringCategory: z.string(), // Relaxed from enum to allow defaults/custom
+  stringFocus: z.string(), // Relaxed from enum
   stringBrand: z.string().min(1, "String brand is required"),
   stringModel: z.string().min(1, "String model is required"),
   tension: z.coerce
@@ -66,6 +69,7 @@ export const CustomerKiosk = () => {
   const [step, setStep] = useState(0);
   const kioskRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
 
   useEffect(() => {
     function onFullscreenChange() {
@@ -87,7 +91,6 @@ export const CustomerKiosk = () => {
   const [lookupStatus, setLookupStatus] = useState<StepStatus>("idle");
   const [submissionStatus, setSubmissionStatus] =
     useState<SubmissionStatus>("idle");
-  const [showStringHelper, setShowStringHelper] = useState(false);
   const [preStretchEnabled, setPreStretchEnabled] = useState(false);
 
   const {
@@ -106,12 +109,50 @@ export const CustomerKiosk = () => {
 
   const stringCategory = watch("stringCategory");
   const stringFocus = watch("stringFocus");
+  const watchedStringBrand = watch("stringBrand");
+  const watchedStringModel = watch("stringModel");
 
-  const stringOptions = useMemo(() => {
-    return stringCatalog.filter(
-      (item) => item.category === stringCategory && item.focus === stringFocus,
-    );
-  }, [stringCategory, stringFocus]);
+  // Auto-detect category/focus when user manually selects/types a string that exists in catalog
+  useEffect(() => {
+    if (!watchedStringBrand || !watchedStringModel) return;
+
+    for (const group of stringCatalog) {
+      const match = group.options.find(
+        (o) =>
+          o.brand.toLowerCase() === watchedStringBrand.toLowerCase() &&
+          o.model.toLowerCase() === watchedStringModel.toLowerCase(),
+      );
+      if (match) {
+        setValue("stringCategory", group.category);
+        setValue("stringFocus", group.focus);
+        return;
+      }
+    }
+  }, [watchedStringBrand, watchedStringModel, setValue]);
+
+  // Derived options for Autocomplete
+  const stringBrandOptions = useMemo(() => {
+    const brands = new Set<string>();
+    stringCatalog.forEach((group) => {
+      group.options.forEach((opt) => brands.add(opt.brand));
+    });
+    return Array.from(brands).sort();
+  }, []);
+
+  const stringModelOptions = useMemo(() => {
+    const models = new Set<string>();
+    stringCatalog.forEach((group) => {
+      group.options.forEach((opt) => {
+        if (
+          !watchedStringBrand ||
+          opt.brand.toLowerCase() === watchedStringBrand.toLowerCase()
+        ) {
+          models.add(opt.model);
+        }
+      });
+    });
+    return Array.from(models).sort();
+  }, [watchedStringBrand]);
 
   const handleLookup = async () => {
     const phone = watch("phone");
@@ -331,19 +372,25 @@ export const CustomerKiosk = () => {
                 <section className="step-panel">
                   <h2>{t("steps.racket")}</h2>
                   <div className="form-grid">
-                    <label>
-                      {t("fields.racketBrand")}
-                      <input {...register("racketBrand")} />
-                      {errors.racketBrand && (
-                        <span className="error">
-                          {errors.racketBrand.message}
-                        </span>
-                      )}
-                    </label>
-                    <label>
-                      {t("fields.racketModel")}
-                      <input {...register("racketModel")} />
-                    </label>
+                    <Autocomplete
+                      label={t("fields.racketBrand")}
+                      {...register("racketBrand")}
+                      value={watch("racketBrand") || ""}
+                      options={racketBrands}
+                      onSelectOption={(val) =>
+                        setValue("racketBrand", val, { shouldValidate: true })
+                      }
+                      error={errors.racketBrand?.message}
+                    />
+                    <Autocomplete
+                      label={t("fields.racketModel")}
+                      {...register("racketModel")}
+                      value={watch("racketModel") || ""}
+                      options={popularRacketModels}
+                      onSelectOption={(val) =>
+                        setValue("racketModel", val, { shouldValidate: true })
+                      }
+                    />
                     <label>
                       {t("fields.notes")}
                       <textarea rows={3} {...register("notes")} />
@@ -355,109 +402,59 @@ export const CustomerKiosk = () => {
               {step === 3 && (
                 <section className="step-panel">
                   <h2>{t("steps.string")}</h2>
+
+                  <input type="hidden" {...register("stringCategory")} />
+                  <input type="hidden" {...register("stringFocus")} />
+
                   <div className="form-grid">
-                    <label>
-                      {t("fields.stringBrand")}
-                      <input
-                        {...register("stringBrand")}
-                        placeholder="e.g. Yonex"
-                      />
-                      {errors.stringBrand && (
-                        <span className="error">
-                          {errors.stringBrand.message}
-                        </span>
-                      )}
-                    </label>
-                    <label>
-                      {t("fields.stringModel")}
-                      <input
-                        {...register("stringModel")}
-                        placeholder="e.g. BG80"
-                      />
-                      {errors.stringModel && (
-                        <span className="error">
-                          {errors.stringModel.message}
-                        </span>
-                      )}
-                    </label>
+                    <Autocomplete
+                      label={t("fields.stringBrand")}
+                      {...register("stringBrand")}
+                      value={watch("stringBrand") || ""}
+                      options={stringBrandOptions}
+                      onSelectOption={(val) =>
+                        setValue("stringBrand", val, { shouldValidate: true })
+                      }
+                      error={errors.stringBrand?.message}
+                      placeholder="e.g. Yonex"
+                    />
+                    <Autocomplete
+                      label={t("fields.stringModel")}
+                      {...register("stringModel")}
+                      value={watch("stringModel") || ""}
+                      options={stringModelOptions}
+                      onSelectOption={(val) =>
+                        setValue("stringModel", val, { shouldValidate: true })
+                      }
+                      error={errors.stringModel?.message}
+                      placeholder="e.g. BG80"
+                    />
                   </div>
 
-                  {!showStringHelper && (
-                    <div className="mb-4">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={() => setShowStringHelper(true)}
-                      >
-                        Not sure? Help me choose
-                      </Button>
-                    </div>
-                  )}
+                  <div className="mb-4 mt-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => setShowWizard(true)}
+                    >
+                      Not sure? Help me choose
+                    </Button>
+                  </div>
 
-                  {showStringHelper && (
-                    <div className="string-selection-guided mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                      <div className="mb-4 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold">
-                          Guided Selection
-                        </h3>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          type="button"
-                          onClick={() => setShowStringHelper(false)}
-                        >
-                          Close
-                        </Button>
-                      </div>
-                      <div className="form-grid mb-6">
-                        <label>
-                          {t("fields.stringCategory")}
-                          <select {...register("stringCategory")}>
-                            <option value="durable">
-                              {t("strings.durable")}
-                            </option>
-                            <option value="repulsion">
-                              {t("strings.repulsion")}
-                            </option>
-                          </select>
-                        </label>
-                        <label>
-                          {t("fields.stringFocus")}
-                          <select {...register("stringFocus")}>
-                            <option value="attack">
-                              {t("strings.attack")}
-                            </option>
-                            <option value="control">
-                              {t("strings.control")}
-                            </option>
-                          </select>
-                        </label>
-                      </div>
-                      <div className="string-helper">
-                        {stringOptions.map((group) => (
-                          <Card key={group.title} className="string-card">
-                            <h3>{group.title}</h3>
-                            <div className="string-options">
-                              {group.options.map((option) => (
-                                <button
-                                  key={`${option.brand}-${option.model}`}
-                                  type="button"
-                                  onClick={() => {
-                                    setValue("stringBrand", option.brand);
-                                    setValue("stringModel", option.model);
-                                    setShowStringHelper(false);
-                                  }}
-                                >
-                                  <strong>{option.brand}</strong>
-                                  <span>{option.model}</span>
-                                </button>
-                              ))}
-                            </div>
-                          </Card>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <StringWizardModal
+                    isOpen={showWizard}
+                    onClose={() => setShowWizard(false)}
+                    onSelect={(selection) => {
+                      setValue("stringCategory", selection.category);
+                      setValue("stringFocus", selection.focus);
+                      setValue("stringBrand", selection.brand, {
+                        shouldValidate: true,
+                      });
+                      setValue("stringModel", selection.model, {
+                        shouldValidate: true,
+                      });
+                    }}
+                  />
 
                   <div className="form-grid">
                     <label>
