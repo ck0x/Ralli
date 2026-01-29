@@ -89,7 +89,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
             <UserButton afterSignOutUrl="/" />
           </SignedIn>
           <SignedOut>
-            <SignInButton mode="redirect">
+            <SignInButton mode="modal">
               <button className="text-sm font-bold bg-white text-black px-3 py-1.5 rounded hover:bg-gray-200">
                 Sign In
               </button>
