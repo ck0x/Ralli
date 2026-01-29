@@ -31,7 +31,7 @@ export default async function handler(
 
       const rows = await sql`
             SELECT o.id, o.merchant_id, o.customer_id, o.racket_brand, o.racket_model, o.string_category,
-                   o.string_focus, o.string_brand, o.string_model, o.tension, o.notes,
+                   o.string_focus, o.string_brand, o.string_model, o.tension, o.pre_stretch, o.due_date, o.is_express, o.notes,
                    o.status, o.created_at, o.completed_at,
                    c.name AS customer_name, c.phone AS customer_phone, c.email AS customer_email
             FROM orders o
@@ -56,6 +56,9 @@ export default async function handler(
         stringBrand: row.string_brand as string,
         stringModel: row.string_model as string,
         tension: row.tension as number,
+        preStretch: row.pre_stretch as string | null,
+        dueDate: row.due_date as string | null,
+        isExpress: row.is_express as boolean,
         notes: row.notes as string | null,
         status: row.status as "pending" | "in_progress" | "completed",
         createdAt: row.created_at as string,
@@ -116,6 +119,9 @@ export default async function handler(
           string_brand,
           string_model,
           tension,
+          pre_stretch,
+          due_date,
+          is_express,
           notes,
           status
         ) VALUES (
@@ -128,6 +134,9 @@ export default async function handler(
           ${payload.stringBrand},
           ${payload.stringModel},
           ${payload.tension},
+          ${payload.preStretch ?? null},
+          ${payload.dueDate ?? null},
+          ${payload.isExpress ?? false},
           ${payload.notes ?? null},
           'pending'
         )

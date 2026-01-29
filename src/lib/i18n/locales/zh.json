@@ -33,6 +33,10 @@
     "stringBrand": "线材品牌",
     "stringModel": "线材型号",
     "tension": "磅数",
+    "preStretch": "预拉（Pre-stretch）",
+    "preStretchToggle": "是否需要预拉？",
+    "dueDate": "希望取件日期",
+    "isExpress": "加急穿线 (+$10 额外费用)",
     "notes": "备注"
   },
   "messages": {

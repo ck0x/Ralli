@@ -30,6 +30,9 @@ const schema = z.object({
     .number()
     .min(15, "Tension must be at least 15")
     .max(35, "Tension must be at most 35"),
+  preStretch: z.string().optional().or(z.literal("")),
+  dueDate: z.string().optional(),
+  isExpress: z.boolean().optional(),
   notes: z.string().optional().or(z.literal("")),
 });
 
@@ -50,6 +53,9 @@ const defaultValues: OrderFormValues = {
   stringBrand: "",
   stringModel: "",
   tension: 24,
+  preStretch: "",
+  dueDate: "",
+  isExpress: false,
   notes: "",
 };
 
@@ -81,6 +87,8 @@ export const CustomerKiosk = () => {
   const [lookupStatus, setLookupStatus] = useState<StepStatus>("idle");
   const [submissionStatus, setSubmissionStatus] =
     useState<SubmissionStatus>("idle");
+  const [showStringHelper, setShowStringHelper] = useState(false);
+  const [preStretchEnabled, setPreStretchEnabled] = useState(false);
 
   const {
     register,
@@ -349,21 +357,109 @@ export const CustomerKiosk = () => {
                   <h2>{t("steps.string")}</h2>
                   <div className="form-grid">
                     <label>
-                      {t("fields.stringCategory")}
-                      <select {...register("stringCategory")}>
-                        <option value="durable">{t("strings.durable")}</option>
-                        <option value="repulsion">
-                          {t("strings.repulsion")}
-                        </option>
-                      </select>
+                      {t("fields.stringBrand")}
+                      <input
+                        {...register("stringBrand")}
+                        placeholder="e.g. Yonex"
+                      />
+                      {errors.stringBrand && (
+                        <span className="error">
+                          {errors.stringBrand.message}
+                        </span>
+                      )}
                     </label>
                     <label>
-                      {t("fields.stringFocus")}
-                      <select {...register("stringFocus")}>
-                        <option value="attack">{t("strings.attack")}</option>
-                        <option value="control">{t("strings.control")}</option>
-                      </select>
+                      {t("fields.stringModel")}
+                      <input
+                        {...register("stringModel")}
+                        placeholder="e.g. BG80"
+                      />
+                      {errors.stringModel && (
+                        <span className="error">
+                          {errors.stringModel.message}
+                        </span>
+                      )}
                     </label>
+                  </div>
+
+                  {!showStringHelper && (
+                    <div className="mb-4">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setShowStringHelper(true)}
+                      >
+                        Not sure? Help me choose
+                      </Button>
+                    </div>
+                  )}
+
+                  {showStringHelper && (
+                    <div className="string-selection-guided mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div className="mb-4 flex items-center justify-between">
+                        <h3 className="text-lg font-semibold">
+                          Guided Selection
+                        </h3>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          type="button"
+                          onClick={() => setShowStringHelper(false)}
+                        >
+                          Close
+                        </Button>
+                      </div>
+                      <div className="form-grid mb-6">
+                        <label>
+                          {t("fields.stringCategory")}
+                          <select {...register("stringCategory")}>
+                            <option value="durable">
+                              {t("strings.durable")}
+                            </option>
+                            <option value="repulsion">
+                              {t("strings.repulsion")}
+                            </option>
+                          </select>
+                        </label>
+                        <label>
+                          {t("fields.stringFocus")}
+                          <select {...register("stringFocus")}>
+                            <option value="attack">
+                              {t("strings.attack")}
+                            </option>
+                            <option value="control">
+                              {t("strings.control")}
+                            </option>
+                          </select>
+                        </label>
+                      </div>
+                      <div className="string-helper">
+                        {stringOptions.map((group) => (
+                          <Card key={group.title} className="string-card">
+                            <h3>{group.title}</h3>
+                            <div className="string-options">
+                              {group.options.map((option) => (
+                                <button
+                                  key={`${option.brand}-${option.model}`}
+                                  type="button"
+                                  onClick={() => {
+                                    setValue("stringBrand", option.brand);
+                                    setValue("stringModel", option.model);
+                                    setShowStringHelper(false);
+                                  }}
+                                >
+                                  <strong>{option.brand}</strong>
+                                  <span>{option.model}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="form-grid">
                     <label>
                       {t("fields.tension")}
                       <input
@@ -376,48 +472,50 @@ export const CustomerKiosk = () => {
                         <span className="error">{errors.tension.message}</span>
                       )}
                     </label>
-                  </div>
-                  <div className="string-helper">
-                    {stringOptions.map((group) => (
-                      <Card key={group.title} className="string-card">
-                        <h3>{group.title}</h3>
-                        <div className="string-options">
-                          {group.options.map((option) => (
-                            <button
-                              key={`${option.brand}-${option.model}`}
-                              type="button"
-                              onClick={() => {
-                                setValue("stringBrand", option.brand);
-                                setValue("stringModel", option.model);
-                              }}
-                            >
-                              <strong>{option.brand}</strong>
-                              <span>{option.model}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                  <div className="form-grid">
-                    <label>
-                      {t("fields.stringBrand")}
-                      <input {...register("stringBrand")} />
-                      {errors.stringBrand && (
-                        <span className="error">
-                          {errors.stringBrand.message}
-                        </span>
-                      )}
-                    </label>
-                    <label>
-                      {t("fields.stringModel")}
-                      <input {...register("stringModel")} />
-                      {errors.stringModel && (
-                        <span className="error">
-                          {errors.stringModel.message}
-                        </span>
-                      )}
-                    </label>
+
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm font-medium text-gray-700">
+                        {t("fields.preStretchToggle")}
+                      </span>
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-2 font-normal">
+                          <input
+                            type="radio"
+                            name="preStretchToggle"
+                            checked={!preStretchEnabled}
+                            onChange={() => {
+                              setPreStretchEnabled(false);
+                              setValue("preStretch", "");
+                            }}
+                          />
+                          No
+                        </label>
+                        <label className="flex items-center gap-2 font-normal">
+                          <input
+                            type="radio"
+                            name="preStretchToggle"
+                            checked={preStretchEnabled}
+                            onChange={() => {
+                              setPreStretchEnabled(true);
+                              setValue("preStretch", "5%");
+                            }}
+                          />
+                          Yes
+                        </label>
+                      </div>
+                    </div>
+
+                    {preStretchEnabled && (
+                      <label>
+                        {t("fields.preStretch")}
+                        <select {...register("preStretch")}>
+                          <option value="5%">5%</option>
+                          <option value="10%">10%</option>
+                          <option value="15%">15%</option>
+                          <option value="20%">20%</option>
+                        </select>
+                      </label>
+                    )}
                   </div>
                 </section>
               )}
@@ -425,6 +523,29 @@ export const CustomerKiosk = () => {
               {step === 4 && (
                 <section className="step-panel">
                   <h2>{t("steps.review")}</h2>
+
+                  <div className="mb-8 rounded-lg border border-primary/20 bg-primary/5 p-6">
+                    <h3 className="mb-4 text-lg font-bold">Options</h3>
+                    <div className="form-grid">
+                      <label>
+                        {t("fields.dueDate")}
+                        <input type="date" {...register("dueDate")} />
+                      </label>
+                      <label className="flex h-full cursor-pointer items-center gap-3">
+                        <input
+                          type="checkbox"
+                          className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+                          {...register("isExpress")}
+                        />
+                        <div className="flex flex-col">
+                          <span className="font-semibold">
+                            {t("fields.isExpress")}
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
                   <div className="review-grid">
                     <div>
                       <p className="label">{t("fields.name")}</p>
@@ -456,8 +577,26 @@ export const CustomerKiosk = () => {
                     </div>
                     <div>
                       <p className="label">{t("fields.tension")}</p>
-                      <p>{watch("tension")}</p>
+                      <p>{watch("tension")} lbs</p>
                     </div>
+                    {watch("preStretch") && (
+                      <div>
+                        <p className="label">{t("fields.preStretch")}</p>
+                        <p>{watch("preStretch")}</p>
+                      </div>
+                    )}
+                    {watch("dueDate") && (
+                      <div>
+                        <p className="label">{t("fields.dueDate")}</p>
+                        <p>{watch("dueDate")}</p>
+                      </div>
+                    )}
+                    {watch("isExpress") && (
+                      <div>
+                        <p className="label">Priority</p>
+                        <p className="font-bold text-red-600">Express</p>
+                      </div>
+                    )}
                   </div>
                   {submissionStatus === "error" && (
                     <p className="error">{t("messages.submitError")}</p>

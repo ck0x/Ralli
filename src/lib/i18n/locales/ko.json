@@ -33,6 +33,10 @@
     "stringBrand": "스트링 브랜드",
     "stringModel": "스트링 모델",
     "tension": "장력 (파운드)",
+    "preStretch": "사전 연신 (Pre-stretch)",
+    "preStretchToggle": "프리스트레치 적용?",
+    "dueDate": "희망 완료일",
+    "isExpress": "익스프레스 스트링잉 (+$10 추가)",
     "notes": "메모"
   },
   "messages": {

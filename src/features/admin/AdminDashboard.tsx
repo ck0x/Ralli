@@ -197,7 +197,14 @@ export const AdminDashboard = () => {
           <Card key={order.id} className="order-card">
             <div className="order-header">
               <div>
-                <h3>{order.customerName}</h3>
+                <div className="flex items-center gap-2">
+                  <h3>{order.customerName}</h3>
+                  {order.isExpress && (
+                    <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-bold text-red-600 animate-pulse">
+                      EXPRESS
+                    </span>
+                  )}
+                </div>
                 <p className="muted">{order.customerPhone}</p>
                 {order.customerEmail && (
                   <p className="muted">{order.customerEmail}</p>
@@ -213,7 +220,13 @@ export const AdminDashboard = () => {
               </p>
               <p>
                 {order.stringBrand} {order.stringModel} • {order.tension} lbs
+                {order.preStretch ? ` • Pre-stretch ${order.preStretch}` : ""}
               </p>
+              {order.dueDate && (
+                <p className="text-sm font-semibold text-indigo-600">
+                  Requested Due: {order.dueDate}
+                </p>
+              )}
               {order.notes && <p className="muted">{order.notes}</p>}
             </div>
             <div className="row">

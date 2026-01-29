@@ -23,6 +23,9 @@ export type Order = {
   stringBrand: string;
   stringModel: string;
   tension: number;
+  preStretch?: string | null;
+  dueDate?: string | null;
+  isExpress?: boolean;
   notes?: string | null;
   status: OrderStatus;
   createdAt: string;
@@ -41,5 +44,8 @@ export type OrderFormValues = {
   stringBrand: string;
   stringModel: string;
   tension: number;
+  preStretch?: string;
+  dueDate?: string;
+  isExpress?: boolean;
   notes?: string;
 };
