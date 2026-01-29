@@ -46,7 +46,31 @@ export default async function handler(
         }
       : null;
 
-    send(res, 200, { customer });
+    let recentOrders: any[] = [];
+    if (customer) {
+      const orderRows = await sql`
+        SELECT o.id, o.racket_brand, o.racket_model, o.string_brand, o.string_model, 
+               o.tension, o.pre_stretch, o.created_at, o.string_category, o.string_focus
+        FROM orders o
+        WHERE o.customer_id = ${customer.id} AND o.merchant_id = ${auth.merchant.id}
+        ORDER BY o.created_at DESC
+        LIMIT 5
+      `;
+      recentOrders = orderRows.map((row) => ({
+        id: row.id,
+        racketBrand: row.racket_brand,
+        racketModel: row.racket_model,
+        stringBrand: row.string_brand,
+        stringModel: row.string_model,
+        stringCategory: row.string_category,
+        stringFocus: row.string_focus,
+        tension: row.tension,
+        preStretch: row.pre_stretch,
+        createdAt: row.created_at,
+      }));
+    }
+
+    send(res, 200, { customer, recentOrders });
   } catch (error) {
     console.error(error);
     send(res, 500, { error: "Failed to fetch customer" });

@@ -12,11 +12,11 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Autocomplete } from "@/components/ui/Autocomplete";
-import { StringWizardModal } from "./StringWizardModal";
+import { PastOrdersModal } from "./PastOrdersModal";
 import { stringCatalog } from "@/lib/strings";
 import { racketBrands, popularRacketModels } from "@/lib/rackets";
 import { createOrder, fetchCustomerByPhone } from "@/lib/api";
-import type { OrderFormValues } from "@/types";
+import type { OrderFormValues, Order } from "@/types";
 
 const schema = z.object({
   phone: z.string().min(7, "Phone number is required (min 7 digits)"),
@@ -70,6 +70,8 @@ export const CustomerKiosk = () => {
   const kioskRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
+  const [showPastOrdersModal, setShowPastOrdersModal] = useState(false);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     function onFullscreenChange() {
@@ -152,28 +154,27 @@ export const CustomerKiosk = () => {
     return Array.from(models).sort();
   }, [watchedStringBrand]);
 
-  const handleLookup = async () => {
-    const phone = watch("phone");
-    if (!phone) return;
-
-    setLookupStatus("loading");
-
-    try {
-      const customer = await fetchCustomerByPhone(phone, adminUserId);
-      if (customer) {
-        setValue("name", customer.name);
-        setValue("email", customer.email ?? "");
-        setValue("preferredLanguage", customer.preferredLanguage ?? "en");
-        if (customer.preferredLanguage) {
-          void i18n.changeLanguage(customer.preferredLanguage);
-        }
-        setLookupStatus("found");
-      } else {
-        setLookupStatus("not_found");
-      }
-    } catch {
-      setLookupStatus("error");
-    }
+  const handleSelectPastOrder = (order: Order) => {
+    // Populate form with past order details
+    setValue("racketBrand", order.racketBrand);
+    setValue("racketModel", order.racketModel || "");
+    setValue("stringBrand", order.stringBrand);
+    setValue("stringModel", order.stringModel);
+    setValue("tension", order.tension);
+    setValue("preStretch", order.preStretch || "");
+    setValue("stringCategory", order.stringCategory);
+    setValue("stringFocus", order.stringFocus);
+    
+    // We already have customer details from the lookup
+    setShowPastOrdersModal(false);
+    
+    // Advance to review step directly? Or Racket step?
+    // Prompt said "pick and submit" or "submit new one and continue".
+    // "Suggests past configurations... pick and submit".
+    // Let's go to Review step (Step 4) so they can verify and submit.
+    // But they might want to change due date or express.
+    // Jumping to step 4 (Review) seems appropriate for "Quick Reorder".
+    setStep(4);
   };
 
   const onSubmit = handleSubmit(async (values) => {
@@ -226,9 +227,39 @@ export const CustomerKiosk = () => {
     }
 
     const isValid = await trigger(fieldsToValidate);
-    if (isValid) {
-      setStep((prev) => prev + 1);
+    if (!isValid) return;
+
+    // Special logic for Step 0 (Lookup)
+    if (step === 0) {
+      const phone = watch("phone");
+      setLookupStatus("loading");
+      try {
+        const result = await fetchCustomerByPhone(phone, adminUserId);
+        if (result?.customer) {
+          setValue("name", result.customer.name);
+          setValue("email", result.customer.email ?? "");
+          setValue("preferredLanguage", result.customer.preferredLanguage ?? "en");
+          if (result.customer.preferredLanguage) {
+            void i18n.changeLanguage(result.customer.preferredLanguage);
+          }
+          setLookupStatus("found");
+
+          if (result.recentOrders && result.recentOrders.length > 0) {
+            setRecentOrders(result.recentOrders);
+            setShowPastOrdersModal(true);
+            return; // Wait for modal
+          }
+        } else {
+            setLookupStatus("not_found");
+        }
+      } catch (e) {
+        console.error("Lookup failed", e);
+        // Fail gracefully, treat as new user
+        setLookupStatus("idle");
+      }
     }
+
+    setStep((prev) => prev + 1);
   };
   const canGoBack = step > 0;
   const canGoNext = step < stepLabels.length - 1;
@@ -239,7 +270,7 @@ export const CustomerKiosk = () => {
       className={clsx(
         "kiosk",
         isFullscreen &&
-          "fixed inset-0 z-50 flex h-screen w-screen max-w-none items-center justify-center overflow-auto bg-gray-100 p-4",
+          "fixed inset-0 z-50 flex h-dvh w-screen max-w-none items-center justify-center overflow-auto bg-gray-100 p-4",
       )}
     >
       <Card className={clsx("kiosk-card", isFullscreen && "w-full max-w-4xl")}>
@@ -304,28 +335,6 @@ export const CustomerKiosk = () => {
                         <span className="error">{errors.phone.message}</span>
                       )}
                     </label>
-                  </div>
-                  <div className="row">
-                    <Button
-                      type="button"
-                      onClick={handleLookup}
-                      isLoading={lookupStatus === "loading"}
-                    >
-                      {t("actions.lookup")}
-                    </Button>
-                    {lookupStatus === "found" && (
-                      <span className="success">
-                        {t("messages.profileFound")}
-                      </span>
-                    )}
-                    {lookupStatus === "not_found" && (
-                      <span className="muted">
-                        {t("messages.profileNotFound")}
-                      </span>
-                    )}
-                    {lookupStatus === "error" && (
-                      <span className="error">{t("messages.submitError")}</span>
-                    )}
                   </div>
                 </section>
               )}
@@ -635,6 +644,17 @@ export const CustomerKiosk = () => {
           </>
         )}
       </Card>
+
+      <PastOrdersModal
+        isOpen={showPastOrdersModal}
+        onClose={() => {
+          setShowPastOrdersModal(false);
+          setStep(1); // Proceed as new/standard
+        }}
+        onSelect={handleSelectPastOrder}
+        orders={recentOrders}
+        customerName={watch("name")}
+      />
     </div>
   );
 };
