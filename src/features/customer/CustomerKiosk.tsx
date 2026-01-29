@@ -12,6 +12,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Autocomplete } from "@/components/ui/Autocomplete";
+import { StringWizardModal } from "./StringWizardModal";
 import { PastOrdersModal } from "./PastOrdersModal";
 import { stringCatalog } from "@/lib/strings";
 import { racketBrands, popularRacketModels } from "@/lib/rackets";
