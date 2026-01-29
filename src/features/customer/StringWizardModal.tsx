@@ -166,37 +166,49 @@ export const StringWizardModal: React.FC<StringWizardModalProps> = ({
             </div>
 
             <div className="grid grid-cols-1 gap-2 max-h-[400px] overflow-y-auto p-1">
-              {recommendedGroup.options.map((option) => (
-                <button
-                  key={`${option.brand}-${option.model}`}
-                  className="w-full flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all active:scale-[0.99]"
-                  onClick={() => {
-                    onSelect({
-                      brand: option.brand,
-                      model: option.model,
-                      category: selection.category!,
-                      focus: selection.focus!,
-                    });
-                    handleClose();
-                  }}
-                >
-                  <div className="flex flex-col items-start">
-                    <span className="font-bold text-gray-900">
-                      {option.brand}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {option.model}
-                    </span>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="pointer-events-none"
+              {recommendedGroup.options.map((option) => {
+                const handleChoose = () => {
+                  onSelect({
+                    brand: option.brand,
+                    model: option.model,
+                    category: selection.category!,
+                    focus: selection.focus!,
+                  });
+                  handleClose();
+                };
+
+                return (
+                  <div
+                    key={`${option.brand}-${option.model}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={handleChoose}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleChoose();
+                      }
+                    }}
+                    className="w-full flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-200"
                   >
-                    Select
-                  </Button>
-                </button>
-              ))}
+                    <div className="flex flex-col items-start">
+                      <span className="font-bold text-gray-900">
+                        {option.brand}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {option.model}
+                      </span>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="pointer-events-none"
+                    >
+                      Select
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
             <Button
               variant="ghost"

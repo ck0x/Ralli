@@ -81,7 +81,12 @@ export default async function handler(
     }
 
     try {
+      // Ensure DB schema is present (migrations may add columns)
+      await ensureTables();
+
       const payload = (await readBody(req)) as any;
+      console.log("[Orders] createOrder payload:", JSON.stringify(payload));
+
       const phone = payload.phone?.trim();
       const merchantId = auth.merchant.id;
 
@@ -108,6 +113,12 @@ export default async function handler(
         RETURNING id
       `;
 
+      if (!customer || !customer.id) {
+        console.error("[Orders] customer upsert did not return id", customer);
+        send(res, 500, { error: "Failed to create or resolve customer" });
+        return;
+      }
+
       const orderRows = await sql`
         INSERT INTO orders (
           merchant_id,
@@ -129,11 +140,11 @@ export default async function handler(
           ${customer.id},
           ${payload.racketBrand},
           ${payload.racketModel ?? null},
-          ${payload.stringCategory},
-          ${payload.stringFocus},
+          ${payload.stringCategory ?? "durable"},
+          ${payload.stringFocus ?? "attack"},
           ${payload.stringBrand},
           ${payload.stringModel},
-          ${payload.tension},
+          ${Number(payload.tension) || 24},
           ${payload.preStretch ?? null},
           ${payload.dueDate ?? null},
           ${payload.isExpress ?? false},
@@ -143,9 +154,22 @@ export default async function handler(
         RETURNING id
       `;
 
+      if (!orderRows || !orderRows[0] || !orderRows[0].id) {
+        console.error(
+          "[Orders] order insert returned unexpected result",
+          orderRows,
+        );
+        send(res, 500, { error: "Failed to insert order" });
+        return;
+      }
+
       send(res, 200, { orderId: orderRows[0].id });
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error(
+        "[Orders] create order error:",
+        error?.message || error,
+        error?.stack || "no-stack",
+      );
       send(res, 500, { error: "Failed to create order" });
     }
     return;
