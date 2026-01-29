@@ -38,7 +38,7 @@ export const Skeleton = ({ className }: SkeletonProps) => {
 export const FullPageLoader = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full bg-neutral-50 p-6">
-      <div className="flex flex-col items-center gap-6 max-w-sm w-full p-10 bg-white rounded-3xl shadow-xl border border-neutral-100 animate-in fade-in zoom-in duration-500">
+      <div className="flex flex-col items-center gap-6 max-w-sm w-full p-10 bg-white rounded-3xl shadow-xl border border-neutral-100 animate-modal-content">
         <div className="relative">
           <div className="h-20 w-20 rounded-full border-4 border-neutral-100 border-t-indigo-600 animate-spin"></div>
           <div className="absolute inset-0 flex items-center justify-center">

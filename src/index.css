@@ -1,5 +1,65 @@
 @import "tailwindcss";
 
+@theme {
+  --animate-wizard-fade-in: wizard-fade-in 0.4s ease-out;
+  --animate-wizard-slide-in: wizard-slide-in 0.4s ease-out;
+  --animate-modal-backdrop: modal-backdrop 0.2s ease-out;
+  --animate-modal-content: modal-content 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-hero-fade: wizard-fade-in 0.7s ease-out;
+  --animate-slide-up: slide-up 0.5s ease-out;
+
+  @keyframes wizard-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes wizard-slide-in {
+    from {
+      transform: translateX(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes modal-backdrop {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes modal-content {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
 * {
   box-sizing: border-box;
 }

@@ -51,7 +51,7 @@ export const StringWizardModal: React.FC<StringWizardModalProps> = ({
     >
       <div className="min-h-[300px] flex flex-col">
         {step === 0 && (
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 animate-in slide-in-from-right-8 fade-in duration-300 fill-mode-forwards">
+          <div className="flex-1 flex flex-col items-center justify-center gap-6 animate-wizard-slide-in">
             <h3 className="text-xl font-bold text-center">
               What matters most to you?
             </h3>
@@ -100,7 +100,7 @@ export const StringWizardModal: React.FC<StringWizardModalProps> = ({
         )}
 
         {step === 1 && (
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 animate-in slide-in-from-right-8 fade-in duration-300 fill-mode-forwards">
+          <div className="flex-1 flex flex-col items-center justify-center gap-6 animate-wizard-slide-in">
             <h3 className="text-xl font-bold text-center">
               What is your play style?
             </h3>
@@ -152,7 +152,7 @@ export const StringWizardModal: React.FC<StringWizardModalProps> = ({
         )}
 
         {step === 2 && recommendedGroup && (
-          <div className="flex-1 flex flex-col gap-4 animate-in slide-in-from-right-8 fade-in duration-300 fill-mode-forwards">
+          <div className="flex-1 flex flex-col gap-4 animate-wizard-slide-in">
             <div className="text-center mb-2">
               <p className="text-gray-600">
                 Based on your choices:{" "}
