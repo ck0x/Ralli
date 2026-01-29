@@ -248,9 +248,17 @@ export const CustomerKiosk = () => {
           setLookupStatus("found");
 
           if (result.recentOrders && result.recentOrders.length > 0) {
+            console.log(
+              "CustomerKiosk: Found recent orders, showing modal",
+              result.recentOrders.length,
+            );
             setRecentOrders(result.recentOrders);
             setShowPastOrdersModal(true);
             return; // Wait for modal
+          } else {
+            console.log(
+              "CustomerKiosk: No recent orders found for returning customer",
+            );
           }
         } else {
           setLookupStatus("not_found");
@@ -631,7 +639,11 @@ export const CustomerKiosk = () => {
                   </Button>
                 )}
                 {canGoNext && (
-                  <Button type="button" onClick={handleNext}>
+                  <Button
+                    type="button"
+                    onClick={handleNext}
+                    isLoading={lookupStatus === "loading"}
+                  >
                     {t("actions.next")}
                   </Button>
                 )}

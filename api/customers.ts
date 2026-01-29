@@ -49,17 +49,17 @@ export default async function handler(
     let recentOrders: any[] = [];
     if (customer) {
       try {
-        const customerId = customer.id;
-        const merchantId = auth.merchant.id;
+        const customerId = String(customer.id);
+        const merchantId = String(auth.merchant.id);
         console.log(
-          `Fetching recent orders for customer=${customerId} merchant=${merchantId}`,
+          `[Lookup] Fetching orders for customer=${customerId} merchant=${merchantId}`,
         );
         const orderRows = await sql`
-          SELECT o.id, o.racket_brand, o.racket_model, o.string_brand, o.string_model, 
-                 o.tension, o.pre_stretch, o.created_at, o.string_category, o.string_focus
-          FROM orders o
-          WHERE o.customer_id = ${customerId} AND o.merchant_id = ${merchantId}
-          ORDER BY o.created_at DESC
+          SELECT id, racket_brand, racket_model, string_brand, string_model, 
+                 tension, pre_stretch, created_at, string_category, string_focus
+          FROM orders
+          WHERE customer_id = ${customerId} AND merchant_id = ${merchantId}
+          ORDER BY created_at DESC
           LIMIT 5
         `;
         recentOrders = orderRows.map((row) => ({
@@ -74,9 +74,12 @@ export default async function handler(
           preStretch: row.pre_stretch,
           createdAt: row.created_at,
         }));
-      } catch (err) {
-        console.error("Error fetching recent orders:", err);
-        // Don't fail the whole request if fetching recent orders fails - continue with empty list
+      } catch (err: any) {
+        console.error(
+          "[Lookup] Error fetching recent orders:",
+          err?.message || err,
+        );
+        // Don't fail the whole request if fetching recent orders fails
         recentOrders = [];
       }
     }
