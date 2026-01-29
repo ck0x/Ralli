@@ -82,6 +82,23 @@ export const ensureTables = async () => {
         ALTER TABLE orders ADD COLUMN is_express boolean DEFAULT false;
       END IF;
 
+      -- Add potentially missing string columns from newer schema versions
+      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'string_category') THEN
+        ALTER TABLE orders ADD COLUMN string_category text DEFAULT 'durable';
+      END IF;
+      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'string_focus') THEN
+        ALTER TABLE orders ADD COLUMN string_focus text DEFAULT 'attack';
+      END IF;
+      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'racket_model') THEN
+        ALTER TABLE orders ADD COLUMN racket_model text;
+      END IF;
+      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'string_model') THEN
+        ALTER TABLE orders ADD COLUMN string_model text;
+      END IF;
+      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'tension') THEN
+        ALTER TABLE orders ADD COLUMN tension integer DEFAULT 24;
+      END IF;
+
       -- Add contact fields to merchants if missing
       IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'merchants' AND column_name = 'business_email') THEN
         ALTER TABLE merchants ADD COLUMN business_email text;

@@ -88,7 +88,7 @@ export const checkAdminRole = async (adminUserId?: string) => {
 export const fetchCustomerByPhone = async (
   phone: string,
   adminUserId?: string,
-): Promise<Customer | null> => {
+): Promise<{ customer: Customer; recentOrders: Order[] } | null> => {
   const response = await fetch(
     `${API_BASE}/api/customers?phone=${encodeURIComponent(phone)}`,
     {
@@ -101,8 +101,12 @@ export const fetchCustomerByPhone = async (
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to fetch customer");
   }
-  const data = (await response.json()) as { customer: Customer | null };
-  return data.customer;
+  const data = (await response.json()) as {
+    customer: Customer | null;
+    recentOrders: Order[];
+  };
+  if (!data.customer) return null;
+  return { customer: data.customer, recentOrders: data.recentOrders || [] };
 };
 
 export const createOrder = async (

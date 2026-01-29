@@ -106,7 +106,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1rem;
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
   position: sticky;
@@ -128,8 +128,6 @@ button {
 }
 
 .brand-mark {
-  width: 44px;
-  height: 44px;
   border-radius: 12px;
   display: grid;
   place-items: center;
