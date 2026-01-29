@@ -2,7 +2,7 @@ import React from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Clock, ArrowRight, Plus } from "lucide-react";
-import { Order } from "@/types";
+import type { Order } from "@/types";
 
 interface PastOrdersModalProps {
   isOpen: boolean;

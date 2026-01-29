@@ -257,8 +257,10 @@ export const CustomerKiosk = () => {
         }
       } catch (e) {
         console.error("Lookup failed", e);
-        // Fail gracefully, treat as new user
-        setLookupStatus("idle");
+        // Fail gracefully, treat as new user and show an error state
+        setLookupStatus("error");
+        toast.error(t("messages.submitError"));
+        return;
       }
     }
 
