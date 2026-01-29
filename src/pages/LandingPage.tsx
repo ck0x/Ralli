@@ -47,12 +47,12 @@ export const LandingPage = () => {
             </Button>
           </SignedIn>
           <SignedOut>
-            <SignInButton mode="redirect">
+            <SignInButton mode="modal">
               <Button variant="secondary" className="text-sm">
                 Log In
               </Button>
             </SignInButton>
-            <SignInButton mode="redirect">
+            <SignInButton mode="modal">
               <Button className="text-sm">Get Started</Button>
             </SignInButton>
           </SignedOut>
@@ -89,7 +89,7 @@ export const LandingPage = () => {
               Launch App
             </Button>
           ) : (
-            <SignInButton mode="redirect">
+            <SignInButton mode="modal">
               <Button className="bg-indigo-600 hover:bg-indigo-700 text-white text-lg px-8 py-6 h-auto rounded-full shadow-lg transition-transform transform hover:-translate-y-1">
                 Start for Free
               </Button>
