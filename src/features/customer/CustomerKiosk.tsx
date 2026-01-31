@@ -95,6 +95,7 @@ export const CustomerKiosk = () => {
   const [submissionStatus, setSubmissionStatus] =
     useState<SubmissionStatus>("idle");
   const [preStretchEnabled, setPreStretchEnabled] = useState(false);
+  const [useOwnString, setUseOwnString] = useState(false);
 
   const {
     register,
@@ -414,7 +415,11 @@ export const CustomerKiosk = () => {
                     />
                     <label>
                       {t("fields.notes")}
-                      <textarea rows={3} {...register("notes")} />
+                      <textarea
+                        rows={3}
+                        {...register("notes")}
+                        placeholder={t("fields.notesPlaceholder")}
+                      />
                     </label>
                   </div>
                 </section>
@@ -424,45 +429,83 @@ export const CustomerKiosk = () => {
                 <section className="step-panel">
                   <div className="flex items-center justify-between">
                     <h2>{t("steps.string")}</h2>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowWizard(true)}
-                      className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white shadow-sm transition-all"
-                    >
-                      <span className="mr-2 hidden sm:inline">Not sure?</span>
-                      Help me choose
-                    </Button>
+                    {!useOwnString && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowWizard(true)}
+                        className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white shadow-sm transition-all"
+                      >
+                        <span className="mr-2 hidden sm:inline">Not sure?</span>
+                        Help me choose
+                      </Button>
+                    )}
                   </div>
 
                   <input type="hidden" {...register("stringCategory")} />
                   <input type="hidden" {...register("stringFocus")} />
 
-                  <div className="form-grid">
-                    <Autocomplete
-                      label={t("fields.stringBrand")}
-                      {...register("stringBrand")}
-                      value={watch("stringBrand") || ""}
-                      options={stringBrandOptions}
-                      onSelectOption={(val) =>
-                        setValue("stringBrand", val, { shouldValidate: true })
-                      }
-                      error={errors.stringBrand?.message}
-                      placeholder="e.g. Yonex"
-                    />
-                    <Autocomplete
-                      label={t("fields.stringModel")}
-                      {...register("stringModel")}
-                      value={watch("stringModel") || ""}
-                      options={stringModelOptions}
-                      onSelectOption={(val) =>
-                        setValue("stringModel", val, { shouldValidate: true })
-                      }
-                      error={errors.stringModel?.message}
-                      placeholder="e.g. BG80"
-                    />
+                  {/* Use Own String Toggle */}
+                  <div className="mb-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+                        checked={useOwnString}
+                        onChange={(e) => {
+                          setUseOwnString(e.target.checked);
+                          if (e.target.checked) {
+                            setValue("stringBrand", "Customer's Own", {
+                              shouldValidate: true,
+                            });
+                            setValue("stringModel", "Provided by customer", {
+                              shouldValidate: true,
+                            });
+                            setValue("stringCategory", "");
+                            setValue("stringFocus", "");
+                          } else {
+                            setValue("stringBrand", "", {
+                              shouldValidate: false,
+                            });
+                            setValue("stringModel", "", {
+                              shouldValidate: false,
+                            });
+                          }
+                        }}
+                      />
+                      <span className="font-medium text-gray-700">
+                        {t("fields.useOwnString")}
+                      </span>
+                    </label>
                   </div>
+
+                  {!useOwnString && (
+                    <div className="form-grid">
+                      <Autocomplete
+                        label={t("fields.stringBrand")}
+                        {...register("stringBrand")}
+                        value={watch("stringBrand") || ""}
+                        options={stringBrandOptions}
+                        onSelectOption={(val) =>
+                          setValue("stringBrand", val, { shouldValidate: true })
+                        }
+                        error={errors.stringBrand?.message}
+                        placeholder="e.g. Yonex"
+                      />
+                      <Autocomplete
+                        label={t("fields.stringModel")}
+                        {...register("stringModel")}
+                        value={watch("stringModel") || ""}
+                        options={stringModelOptions}
+                        onSelectOption={(val) =>
+                          setValue("stringModel", val, { shouldValidate: true })
+                        }
+                        error={errors.stringModel?.message}
+                        placeholder="e.g. BG80"
+                      />
+                    </div>
+                  )}
 
                   <StringWizardModal
                     isOpen={showWizard}

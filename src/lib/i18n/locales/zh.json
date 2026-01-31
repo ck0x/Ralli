@@ -37,7 +37,9 @@
     "preStretchToggle": "是否需要预拉？",
     "dueDate": "希望取件日期",
     "isExpress": "加急穿线 (+$10 额外费用)",
-    "notes": "备注"
+    "notes": "备注",
+    "useOwnString": "自带线材",
+    "notesPlaceholder": "例如：偏好线材颜色、特殊要求..."
   },
   "messages": {
     "lookupHelp": "输入手机号查找已保存的档案。",

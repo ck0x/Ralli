@@ -37,7 +37,9 @@
     "preStretchToggle": "프리스트레치 적용?",
     "dueDate": "희망 완료일",
     "isExpress": "익스프레스 스트링잉 (+$10 추가)",
-    "notes": "메모"
+    "notes": "메모",
+    "useOwnString": "본인 스트링 지참",
+    "notesPlaceholder": "예: 선호 스트링 색상, 특별 요청 사항..."
   },
   "messages": {
     "lookupHelp": "전화번호로 저장된 프로필을 찾습니다.",

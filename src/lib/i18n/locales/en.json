@@ -37,7 +37,9 @@
     "preStretchToggle": "Pre-stretch?",
     "dueDate": "Requested Due Date",
     "isExpress": "Express Stringing (+$10 extra)",
-    "notes": "Notes"
+    "notes": "Notes",
+    "useOwnString": "I'm bringing my own string",
+    "notesPlaceholder": "e.g. Preferred string colour, special requests..."
   },
   "messages": {
     "lookupHelp": "Enter a new or existing phone number.",
