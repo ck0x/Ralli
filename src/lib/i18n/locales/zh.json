@@ -37,13 +37,11 @@
     "preStretchToggle": "是否需要预拉？",
     "dueDate": "希望取件日期",
     "isExpress": "加急穿线 (+$10 额外费用)",
-    "notes": "备注",
     "racketNotes": "球拍备注",
     "racketNotesPlaceholder": "例如：护线管损坏、需要更换手胶...",
     "stringNotes": "线材备注",
     "stringNotesPlaceholder": "例如：偏好线材颜色、特殊要求...",
-    "useOwnString": "自带线材",
-    "notesPlaceholder": "例如：偏好线材颜色、特殊要求..."
+    "useOwnString": "自带线材"
   },
   "messages": {
     "lookupHelp": "输入手机号查找已保存的档案。",

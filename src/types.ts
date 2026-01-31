@@ -49,5 +49,4 @@ export type OrderFormValues = {
   stringNotes?: string;
   dueDate?: string;
   isExpress?: boolean;
-  notes?: string;
 };

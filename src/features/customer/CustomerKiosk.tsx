@@ -39,7 +39,6 @@ const schema = z.object({
   stringNotes: z.string().optional().or(z.literal("")),
   dueDate: z.string().optional(),
   isExpress: z.boolean().optional(),
-  notes: z.string().optional().or(z.literal("")),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -64,7 +63,6 @@ const defaultValues: OrderFormValues = {
   stringNotes: "",
   dueDate: "",
   isExpress: false,
-  notes: "",
 };
 
 export const CustomerKiosk = () => {
@@ -219,7 +217,7 @@ export const CustomerKiosk = () => {
         fieldsToValidate = ["name", "email", "preferredLanguage"];
         break;
       case 2:
-        fieldsToValidate = ["racketBrand", "racketModel", "notes"];
+        fieldsToValidate = ["racketBrand", "racketModel"];
         break;
       case 3:
         fieldsToValidate = [
@@ -451,11 +449,11 @@ export const CustomerKiosk = () => {
                   <input type="hidden" {...register("stringFocus")} />
 
                   {/* Use Own String Toggle */}
-                  <div className="mb-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
-                    <label className="flex items-center gap-3 cursor-pointer">
+                  <div className="mb-6 px-1">
+                    <label className="inline-flex items-center gap-2.5 cursor-pointer group">
                       <input
                         type="checkbox"
-                        className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+                        className="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                         checked={useOwnString}
                         onChange={(e) => {
                           setUseOwnString(e.target.checked);
@@ -478,7 +476,7 @@ export const CustomerKiosk = () => {
                           }
                         }}
                       />
-                      <span className="font-medium text-gray-700">
+                      <span className="text-sm font-medium text-gray-600 group-hover:text-indigo-600 transition-colors">
                         {t("fields.useOwnString")}
                       </span>
                     </label>
@@ -585,16 +583,14 @@ export const CustomerKiosk = () => {
                     )}
                   </div>
 
-                  <div className="form-grid mt-4">
-                    <label>
-                      {t("fields.stringNotes")}
-                      <textarea
-                        rows={3}
-                        {...register("stringNotes")}
-                        placeholder={t("fields.stringNotesPlaceholder")}
-                      />
-                    </label>
-                  </div>
+                  <label className="mt-4">
+                    {t("fields.stringNotes")}
+                    <textarea
+                      rows={3}
+                      {...register("stringNotes")}
+                      placeholder={t("fields.stringNotesPlaceholder")}
+                    />
+                  </label>
                 </section>
               )}
 
