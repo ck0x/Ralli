@@ -37,7 +37,11 @@
     "preStretchToggle": "프리스트레치 적용?",
     "dueDate": "희망 완료일",
     "isExpress": "익스프레스 스트링잉 (+$10 추가)",
-    "notes": "메모"
+    "racketNotes": "라켓 메모",
+    "racketNotesPlaceholder": "예: 그로밋 손상, 그립 교체 필요...",
+    "stringNotes": "스트링 메모",
+    "stringNotesPlaceholder": "예: 선호 스트링 색상, 특별 요청 사항...",
+    "useOwnString": "본인 스트링 지참"
   },
   "messages": {
     "lookupHelp": "전화번호로 저장된 프로필을 찾습니다.",

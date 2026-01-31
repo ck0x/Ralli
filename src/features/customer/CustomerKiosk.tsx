@@ -26,6 +26,7 @@ const schema = z.object({
   preferredLanguage: z.string(),
   racketBrand: z.string().min(1, "Racket brand is required"),
   racketModel: z.string().optional().or(z.literal("")),
+  racketNotes: z.string().optional().or(z.literal("")),
   stringCategory: z.string(), // Relaxed from enum to allow defaults/custom
   stringFocus: z.string(), // Relaxed from enum
   stringBrand: z.string().min(1, "String brand is required"),
@@ -35,9 +36,9 @@ const schema = z.object({
     .min(15, "Tension must be at least 15")
     .max(35, "Tension must be at most 35"),
   preStretch: z.string().optional().or(z.literal("")),
+  stringNotes: z.string().optional().or(z.literal("")),
   dueDate: z.string().optional(),
   isExpress: z.boolean().optional(),
-  notes: z.string().optional().or(z.literal("")),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -52,15 +53,16 @@ const defaultValues: OrderFormValues = {
   preferredLanguage: "en",
   racketBrand: "",
   racketModel: "",
+  racketNotes: "",
   stringCategory: "durable",
   stringFocus: "attack",
   stringBrand: "",
   stringModel: "",
   tension: 24,
   preStretch: "",
+  stringNotes: "",
   dueDate: "",
   isExpress: false,
-  notes: "",
 };
 
 export const CustomerKiosk = () => {
@@ -95,6 +97,7 @@ export const CustomerKiosk = () => {
   const [submissionStatus, setSubmissionStatus] =
     useState<SubmissionStatus>("idle");
   const [preStretchEnabled, setPreStretchEnabled] = useState(false);
+  const [useOwnString, setUseOwnString] = useState(false);
 
   const {
     register,
@@ -214,7 +217,7 @@ export const CustomerKiosk = () => {
         fieldsToValidate = ["name", "email", "preferredLanguage"];
         break;
       case 2:
-        fieldsToValidate = ["racketBrand", "racketModel", "notes"];
+        fieldsToValidate = ["racketBrand", "racketModel"];
         break;
       case 3:
         fieldsToValidate = [
@@ -413,8 +416,12 @@ export const CustomerKiosk = () => {
                       }
                     />
                     <label>
-                      {t("fields.notes")}
-                      <textarea rows={3} {...register("notes")} />
+                      {t("fields.racketNotes")}
+                      <textarea
+                        rows={3}
+                        {...register("racketNotes")}
+                        placeholder={t("fields.racketNotesPlaceholder")}
+                      />
                     </label>
                   </div>
                 </section>
@@ -424,45 +431,83 @@ export const CustomerKiosk = () => {
                 <section className="step-panel">
                   <div className="flex items-center justify-between">
                     <h2>{t("steps.string")}</h2>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowWizard(true)}
-                      className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white shadow-sm transition-all"
-                    >
-                      <span className="mr-2 hidden sm:inline">Not sure?</span>
-                      Help me choose
-                    </Button>
+                    {!useOwnString && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowWizard(true)}
+                        className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white shadow-sm transition-all"
+                      >
+                        <span className="mr-2 hidden sm:inline">Not sure?</span>
+                        Help me choose
+                      </Button>
+                    )}
                   </div>
 
                   <input type="hidden" {...register("stringCategory")} />
                   <input type="hidden" {...register("stringFocus")} />
 
-                  <div className="form-grid">
-                    <Autocomplete
-                      label={t("fields.stringBrand")}
-                      {...register("stringBrand")}
-                      value={watch("stringBrand") || ""}
-                      options={stringBrandOptions}
-                      onSelectOption={(val) =>
-                        setValue("stringBrand", val, { shouldValidate: true })
-                      }
-                      error={errors.stringBrand?.message}
-                      placeholder="e.g. Yonex"
-                    />
-                    <Autocomplete
-                      label={t("fields.stringModel")}
-                      {...register("stringModel")}
-                      value={watch("stringModel") || ""}
-                      options={stringModelOptions}
-                      onSelectOption={(val) =>
-                        setValue("stringModel", val, { shouldValidate: true })
-                      }
-                      error={errors.stringModel?.message}
-                      placeholder="e.g. BG80"
-                    />
+                  {/* Use Own String Toggle */}
+                  <div className="mb-6 px-1">
+                    <label className="inline-flex items-center gap-2.5 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        className="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                        checked={useOwnString}
+                        onChange={(e) => {
+                          setUseOwnString(e.target.checked);
+                          if (e.target.checked) {
+                            setValue("stringBrand", "Customer's Own", {
+                              shouldValidate: true,
+                            });
+                            setValue("stringModel", "Provided by customer", {
+                              shouldValidate: true,
+                            });
+                            setValue("stringCategory", "");
+                            setValue("stringFocus", "");
+                          } else {
+                            setValue("stringBrand", "", {
+                              shouldValidate: false,
+                            });
+                            setValue("stringModel", "", {
+                              shouldValidate: false,
+                            });
+                          }
+                        }}
+                      />
+                      <span className="text-sm font-medium text-gray-600 group-hover:text-indigo-600 transition-colors">
+                        {t("fields.useOwnString")}
+                      </span>
+                    </label>
                   </div>
+
+                  {!useOwnString && (
+                    <div className="form-grid">
+                      <Autocomplete
+                        label={t("fields.stringBrand")}
+                        {...register("stringBrand")}
+                        value={watch("stringBrand") || ""}
+                        options={stringBrandOptions}
+                        onSelectOption={(val) =>
+                          setValue("stringBrand", val, { shouldValidate: true })
+                        }
+                        error={errors.stringBrand?.message}
+                        placeholder="e.g. Yonex"
+                      />
+                      <Autocomplete
+                        label={t("fields.stringModel")}
+                        {...register("stringModel")}
+                        value={watch("stringModel") || ""}
+                        options={stringModelOptions}
+                        onSelectOption={(val) =>
+                          setValue("stringModel", val, { shouldValidate: true })
+                        }
+                        error={errors.stringModel?.message}
+                        placeholder="e.g. BG80"
+                      />
+                    </div>
+                  )}
 
                   <StringWizardModal
                     isOpen={showWizard}
@@ -537,6 +582,15 @@ export const CustomerKiosk = () => {
                       </label>
                     )}
                   </div>
+
+                  <label className="mt-4">
+                    {t("fields.stringNotes")}
+                    <textarea
+                      rows={3}
+                      {...register("stringNotes")}
+                      placeholder={t("fields.stringNotesPlaceholder")}
+                    />
+                  </label>
                 </section>
               )}
 

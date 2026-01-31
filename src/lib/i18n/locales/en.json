@@ -37,7 +37,11 @@
     "preStretchToggle": "Pre-stretch?",
     "dueDate": "Requested Due Date",
     "isExpress": "Express Stringing (+$10 extra)",
-    "notes": "Notes"
+    "racketNotes": "Racket Notes",
+    "racketNotesPlaceholder": "e.g. Cracked grommet, grip replacement needed...",
+    "stringNotes": "String Notes",
+    "stringNotesPlaceholder": "e.g. Preferred string colour, special requests...",
+    "useOwnString": "I'm bringing my own string"
   },
   "messages": {
     "lookupHelp": "Enter a new or existing phone number.",
