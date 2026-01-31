@@ -26,6 +26,7 @@ const schema = z.object({
   preferredLanguage: z.string(),
   racketBrand: z.string().min(1, "Racket brand is required"),
   racketModel: z.string().optional().or(z.literal("")),
+  racketNotes: z.string().optional().or(z.literal("")),
   stringCategory: z.string(), // Relaxed from enum to allow defaults/custom
   stringFocus: z.string(), // Relaxed from enum
   stringBrand: z.string().min(1, "String brand is required"),
@@ -35,6 +36,7 @@ const schema = z.object({
     .min(15, "Tension must be at least 15")
     .max(35, "Tension must be at most 35"),
   preStretch: z.string().optional().or(z.literal("")),
+  stringNotes: z.string().optional().or(z.literal("")),
   dueDate: z.string().optional(),
   isExpress: z.boolean().optional(),
   notes: z.string().optional().or(z.literal("")),
@@ -52,12 +54,14 @@ const defaultValues: OrderFormValues = {
   preferredLanguage: "en",
   racketBrand: "",
   racketModel: "",
+  racketNotes: "",
   stringCategory: "durable",
   stringFocus: "attack",
   stringBrand: "",
   stringModel: "",
   tension: 24,
   preStretch: "",
+  stringNotes: "",
   dueDate: "",
   isExpress: false,
   notes: "",
@@ -414,11 +418,11 @@ export const CustomerKiosk = () => {
                       }
                     />
                     <label>
-                      {t("fields.notes")}
+                      {t("fields.racketNotes")}
                       <textarea
                         rows={3}
-                        {...register("notes")}
-                        placeholder={t("fields.notesPlaceholder")}
+                        {...register("racketNotes")}
+                        placeholder={t("fields.racketNotesPlaceholder")}
                       />
                     </label>
                   </div>
@@ -579,6 +583,17 @@ export const CustomerKiosk = () => {
                         </select>
                       </label>
                     )}
+                  </div>
+
+                  <div className="form-grid mt-4">
+                    <label>
+                      {t("fields.stringNotes")}
+                      <textarea
+                        rows={3}
+                        {...register("stringNotes")}
+                        placeholder={t("fields.stringNotesPlaceholder")}
+                      />
+                    </label>
                   </div>
                 </section>
               )}

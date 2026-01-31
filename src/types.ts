@@ -39,12 +39,14 @@ export type OrderFormValues = {
   preferredLanguage: string;
   racketBrand: string;
   racketModel?: string;
+  racketNotes?: string;
   stringCategory: "durable" | "repulsion";
   stringFocus: "attack" | "control";
   stringBrand: string;
   stringModel: string;
   tension: number;
   preStretch?: string;
+  stringNotes?: string;
   dueDate?: string;
   isExpress?: boolean;
   notes?: string;
